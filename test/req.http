@@ -1,0 +1,75 @@
+GET https://api.sofiaplan.bg/datasets/297 HTTP/1.1
+content-type: application/json
+
+###
+POST http://localhost:9000/api/v1/users/signup HTTP/1.1
+content-type: application/json
+
+{
+   "firstName": "Velssizar11s115555",
+   "lastName": "Stoyanov22",
+   "email": "velizaisasdddдo21023@yahoo.com",
+   "password": "pass12345",
+   "passwordConfirm": "pass12345",
+   "imageUrl": "aAAAvatar_photo",
+   "about": "I'm a pro!",
+   "userType": "test"
+}
+
+###
+
+PATCH http://localhost:9000/api/v1/users/634dbca0f38976767bc8d9bd HTTP/1.1
+content-type: application/json
+
+{
+   "firstName": "ve",
+   "lastName": "Stoyanov22",
+   "email": "velizaisдo1023@yahoo.com",
+   "password": "pass123452",
+   "imageUrl": "aAAAvatar_photo",
+   "about": "I'm a pro!"
+}
+
+###
+
+GET http://localhost:9000/api/v1/users/ HTTP/1.1
+content-type: application/json
+
+###
+
+DELETE http://localhost:9000/api/v1/users/634dc596a95ee175a4a20195 HTTP/1.1
+content-type: application/json
+
+###
+GET http://localhost:9000/api/v1/users/634dc5aca95ee175a4a20199 HTTP/1.1
+content-type: application/json
+
+############################
+POST http://localhost:9000/api/v1/users/signup HTTP/1.1
+content-type: application/json
+
+{
+  "firstName": "string",
+  "lastName": "string",
+  "imageUrl": "string",
+  "email": "addsd@gmail.com",
+  "password": "pass123452",
+  "passwordConfirm": "pass123452",
+  "about": "about",
+  "website": "website.com",
+  "districts": [
+   "ИЗГРЕВ", "МЛАДОСТ 1"
+  ],
+  "userType": "client",
+  "pricePerHour": ["50", "100"],
+  "cleaningCategories": ["Гладене", "Почистване на хладилник от вътре"],
+  "availablity": {
+    "adHoc": "false",
+    "weekly": "true",
+    "biWeekly": "true"
+  },
+  "availabilityHours": {
+    "start": "08",
+    "end": "12"
+  }
+}
