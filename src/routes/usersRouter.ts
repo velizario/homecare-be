@@ -16,7 +16,7 @@ const router = express.Router();
 // router.route("/featured").get(featured, getAllUsers);
 
 // Signup route
-router.post("/signup", signup);
+router.use("/signup", signup);
 
 // login route
 router.post("/login", login);

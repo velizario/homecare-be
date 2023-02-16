@@ -12,14 +12,11 @@ export const app = express();
 
 
 async function start() {
-
-  
-  // Security http headers
+   // Security http headers
   app.use(helmet());
   app.use(morgan('[:date[clf]] :remote-user ":method :url HTTP/:http-version" Status: :status Response time: :response-time ms'));
   // app.use("/", express.static(path.join(__dirname, "../public")));
   app.use(express.json()); //middleware to handle incoming request data i.e. data from  the body is added to the 'req' object argument. This way req.body is available as object
-
   // Additional middleware which will set headers that we need on each request.
   app.use(function (req: Request, res: Response, next: NextFunction) {
     // Set permissive CORS header - this allows this server to be used only as
@@ -66,7 +63,5 @@ async function start() {
   // app.patch("/api/v1/products/:id", updateProduct);
 
 }
-
-
 
 start();
