@@ -1,29 +1,26 @@
 import { Request, Response, NextFunction } from "express";
 // import { Document } from "mongoose";
-import { UserModel } from "../model/UserModel";
+import { User } from "../entity/Entities";
 import catchAsync from "../utils/errorHandler";
-import jwt from "jsonwebtoken";
-import { userDBHandler } from "../dao/UserRepository";
+import jwt, { JwtPayload } from "jsonwebtoken";
+import { userRepository } from "../dao/UserRepository";
 import AppError from "../utils/appError";
-import { Types } from "mongoose";
 import validatePassword from "../utils/validatePassword";
 
-export type JwtPayload = {id: Types.ObjectId}
-
-const signToken = (id: Types.ObjectId) => {
-  const token = jwt.sign({ id } as JwtPayload, process.env.JWT_SECRET, {
+const signToken = (id: string) => {
+  const token = jwt.sign(id, process.env.JWT_SECRET, {
     expiresIn: process.env.JWT_EXPIRES_IN,
   });
   return token;
 };
 
 export const createSendToken = (
-  // user: Document<any, any, UserModel>,
-  user: UserModel,
+  // user: Document<any, any, User>,
+  user: User,
   statusCode: number,
   res: Response
 ) => {
-  const token = signToken(user._id);
+  const token = signToken(user.id);
 
   // send cookie
   res.cookie("jwt", token, {
@@ -38,7 +35,7 @@ export const createSendToken = (
     // sameSite: "lax",
   });
 
-  user.password = undefined;
+  user.password = "";
 
   res.status(statusCode).json({
     status: "success",
@@ -51,14 +48,15 @@ export const createSendToken = (
 
 export const login = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
-    const { email, password } = req.body as UserModel;
+    const { email, password } = req.body as User;
     // Check if email and password exist
     if (!email || !password) {
       return next(new AppError("Please provide email and password!", 400));
     }
     // Check if the user exists and password is correct
-    const user = await userDBHandler.findByEmail(email, true);
-    if (!user || !(await validatePassword(password, user.password!))) return next(new AppError("Incorrect email or password", 401));
+    const user = await userRepository.findOneBy({ email });
+    if (!user || !(await validatePassword(password, user.password!)))
+      return next(new AppError("Incorrect email or password", 401));
 
     // Send the token to the user
     createSendToken(user, 200, res);
@@ -68,7 +66,6 @@ export const login = catchAsync(
 // Validates token and allows further routing
 export const protect = catchAsync(
   async (req: Request, res: Response, next: NextFunction, email?: string) => {
-
     // 1) Get token and
     // Token is sent by the user in the header in format { Authorization : Bearer token }
     let token;
@@ -85,11 +82,11 @@ export const protect = catchAsync(
     // Asynchronously - typescript returns error
     // const decoded = await promisify(jwt.verify)(token, process.env.JWT_SECRET);
     //NOTE: synchronously - blocks the thread.
-    const decoded = jwt.verify(token, process.env.JWT_SECRET) as JwtPayload ;
+    const decoded = jwt.verify(token, process.env.JWT_SECRET) as JwtPayload;
 
     // 3) Check if user still exists (might have been deleted)
 
-    const freshUser = await userDBHandler.findById(decoded.id.toString());
+    const freshUser = await userRepository.findOne(decoded.id.toString());
     if (!freshUser) {
       return next(new AppError("The user does not longer exist", 401));
     }

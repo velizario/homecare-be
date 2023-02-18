@@ -1,12 +1,11 @@
-import { Request, Response, NextFunction } from "express";
+import { Request, Response} from "express";
 import catchAsync from "../utils/errorHandler";
-import { bookingDBHandler } from "../dao/BookingRepository";
-import { BookingModel } from "../model/bookingModel"
-import { createSendToken } from "./authController";
-import AppError from "../utils/appError";
+import { bookingRepository } from "../dao/BookingRepository";
+import { Event } from "../entity/Entities";
+
 
 export const getBooking = catchAsync(async (req: Request, res: Response) => {
-  const booking = await bookingDBHandler.findById(req.params.id);
+  const booking = await bookingRepository.findOneBy({id: req.params.id});
   res.status(201).json({
     status: "success",
     data: {
@@ -17,7 +16,7 @@ export const getBooking = catchAsync(async (req: Request, res: Response) => {
 
 // TODO: Validate that update is coming either from admin or from the booking itself by confirming token is for the same booking as the updates
 export const updateBooking = catchAsync(async (req: Request, res: Response) => {
-  const updatedBooking = await bookingDBHandler.edit(req.params.id, req.body);
+  const updatedBooking = await bookingRepository.update(req.params.id, req.body);
 
   res.status(201).json({
     status: "success",
@@ -29,7 +28,7 @@ export const updateBooking = catchAsync(async (req: Request, res: Response) => {
 
 
 export const createBooking = catchAsync(async (req: Request, res: Response) => {
-  const newBooking = await bookingDBHandler.add(req.body);
+  const newBooking = await bookingRepository.save(req.body);
 
   res.status(201).json({
     status: "success",
@@ -39,9 +38,8 @@ export const createBooking = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
-
 export const getBookings = catchAsync(async (req: Request, res: Response) => {
-  const bookings = await bookingDBHandler.findByQuery(req.query as Record <string, string>);
+  const bookings = await bookingRepository.findBy(req.query);
   res.status(201).json({
     status: "success",
     data: {
@@ -52,7 +50,7 @@ export const getBookings = catchAsync(async (req: Request, res: Response) => {
 
 
 export const deleteBooking = catchAsync(async (req: Request, res: Response) => {
-  await bookingDBHandler.deleteById(req.params.id);
+  await bookingRepository.delete(req.params.id);
 
   res.status(204).json({
     status: "success",

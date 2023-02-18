@@ -1,12 +1,12 @@
 import { Request, Response, NextFunction } from "express";
 import catchAsync from "../utils/errorHandler";
-import { userDBHandler } from "../dao/UserRepository";
-import { UserModel } from "../model/UserModel"
 import { createSendToken } from "./authController";
 import AppError from "../utils/appError";
+import { User } from "../entity/Entities";
+import { userRepository } from "../dao/UserRepository";
 
 export const getUser = catchAsync(async (req: Request, res: Response) => {
-  const user = await userDBHandler.findById(req.params.id);
+  const user = await userRepository.findOneBy({id: req.params.id});
   res.status(201).json({
     status: "success",
     data: {
@@ -17,8 +17,8 @@ export const getUser = catchAsync(async (req: Request, res: Response) => {
 
 export const signup = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
-    const userData: UserModel = req.body;
-    const newUser = await userDBHandler.add(userData);
+    const userData: User = req.body;
+    const newUser = await userRepository.save(userData);
     if (newUser) {
       createSendToken(newUser, 201, res);
     }
@@ -30,7 +30,7 @@ export const signup = catchAsync(
 
 // TODO: Validate that update is coming either from admin or from the user itself by confirming token is for the same user as the updates
 export const updateUser = catchAsync(async (req: Request, res: Response) => {
-  const updatedUser = await userDBHandler.edit(req.params.id, req.body);
+  const updatedUser = await userRepository.update(req.params.id, req.body);
 
   res.status(201).json({
     status: "success",
