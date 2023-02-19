@@ -1,3 +1,4 @@
+import { IsUrl, Length, IsEmail, IsOptional } from "class-validator";
 import {
   Entity,
   PrimaryGeneratedColumn,
@@ -8,7 +9,6 @@ import {
   ManyToMany,
   JoinTable,
   ManyToOne,
-  Timestamp,
   OneToMany,
   Relation,
 } from "typeorm";
@@ -36,18 +36,24 @@ export class User {
   id: string;
 
   @Column("varchar", { length: 30 })
+  @Length(2, 30)
   firstName: string;
 
   @Column("varchar", { length: 30 })
+  @Length(2, 30)
   lastName: string;
 
   @Column("varchar", { length: 100, nullable: true })
+  @IsOptional()
+  @IsUrl()
   imageUrl: string;
 
   @Column("varchar", { length: 50 })
+  @IsEmail()
   email: string;
 
   @Column("varchar", { length: 30 })
+  @Length(4, 30)
   password: string;
 
   @CreateDateColumn()
@@ -77,6 +83,18 @@ export class Client {
 export class Vendor {
   @PrimaryGeneratedColumn()
   id: string;
+
+  @Column()
+  @IsUrl()
+  webPage: string;
+
+  @Column()
+  @IsUrl()
+  instagram: string;
+
+  @Column()
+  @IsUrl()
+  facebook: string;
 
   @OneToOne(() => User, (user) => user.vendor)
   @JoinColumn()
