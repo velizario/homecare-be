@@ -4,6 +4,7 @@ import { createSendToken } from "./authController";
 import AppError from "../utils/appError";
 import { User } from "../entity/Entities";
 import { userRepository } from "../dao/UserRepository";
+import { validate } from "class-validator";
 
 export const getUser = catchAsync(async (req: Request, res: Response) => {
   const user = await userRepository.findOneBy({id: req.params.id});
@@ -17,7 +18,18 @@ export const getUser = catchAsync(async (req: Request, res: Response) => {
 
 export const signup = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
-    const userData: User = req.body;
+    let userData = new User();
+    Object.assign( userData, req.body)
+    // validate user data
+    validate(userData).then(errors => {
+      // errors is an array of validation errors
+      if (errors.length > 0) {
+        console.log('validation failed. errors: ', errors);
+      } else {
+        console.log('validation succeed');
+      }
+    });
+
     const newUser = await userRepository.save(userData);
     if (newUser) {
       createSendToken(newUser, 201, res);

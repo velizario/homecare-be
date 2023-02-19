@@ -1,6 +1,5 @@
 import * as express from "express";
 import {
-  
   login,
   protect,
 } from "../controllers/authController";
