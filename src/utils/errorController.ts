@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 
 interface ResponseError extends Error {
+  data: any;
   statusCode: number;
   status: string | undefined;
 }
@@ -16,7 +17,8 @@ const globalErrorHandler = (
 
   res.status(err.statusCode).json({
       status: err.status,
-      message: err.message
+      message: err.message,
+      data: err.data
   })
 };
 

@@ -1,5 +1,5 @@
 import { DataSource } from "typeorm";
-import { Client, Districts, Event, Portfolio, Service, Schedule, User, Vendor, WeekdayAvailability } from "./entity/Entities";
+import { Client, District, Event, Portfolio, Service, Schedule, User, Vendor, WeekdayAvailability } from "./entity/Entities";
 export const AppDataSource = new DataSource({
     type: "postgres",
     host: "localhost",
@@ -9,7 +9,7 @@ export const AppDataSource = new DataSource({
     database: "test",
     synchronize: true,
     logging: false,
-    entities: [User, Client, Vendor, Districts, Schedule, WeekdayAvailability, Service, Portfolio, Event],
+    entities: [User, Client, Vendor, District, Schedule, WeekdayAvailability, Service, Portfolio, Event],
     migrations: [],
     subscribers: [],
   });

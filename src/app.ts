@@ -9,9 +9,6 @@ import globalErrorHandler from "./utils/errorController";
 
 export const app = express();
 
-
-
-async function start() {
    // Security http headers
   app.use(helmet());
   app.use(morgan('[:date[clf]] :remote-user ":method :url HTTP/:http-version" Status: :status Response time: :response-time ms'));
@@ -62,6 +59,4 @@ async function start() {
   // Defines Route for HTTP method 'patch' and for path '/api/v1/products'. Updates existing product
   // app.patch("/api/v1/products/:id", updateProduct);
 
-}
 
-start();

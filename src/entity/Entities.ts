@@ -52,9 +52,11 @@ export class User {
   @IsEmail()
   email: string;
 
-  @Column("varchar", { length: 30 })
-  @Length(4, 30)
+  @Column()
   password: string;
+
+  @Column()
+  isVendor: boolean;
 
   @CreateDateColumn()
   createdAt: Date;
@@ -100,8 +102,8 @@ export class Vendor {
   @JoinColumn()
   user: User;
 
-  @ManyToMany(() => Districts, (district) => district.assignedVendors)
-  servedDistricts: Districts[];
+  @ManyToMany(() => District, (district) => district.vendor)
+  servedDistrict: District[];
 
   @OneToOne(() => Portfolio, (prices) => prices.vendor)
   portfolio: Relation<Portfolio>;
@@ -114,16 +116,16 @@ export class Vendor {
 }
 
 @Entity()
-export class Districts {
+export class District {
   @PrimaryGeneratedColumn()
   id: string;
 
   @Column()
   district: string;
 
-  @ManyToMany(() => Vendor, (vendor) => vendor.servedDistricts)
+  @ManyToMany(() => Vendor, (vendor) => vendor.servedDistrict)
   @JoinTable()
-  assignedVendors: Vendor[];
+  vendor: Vendor[];
 }
 
 @Entity()

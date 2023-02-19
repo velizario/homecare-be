@@ -18,7 +18,7 @@ const router = express.Router();
 router.use("/signup", signup);
 
 // login route
-router.post("/login", login);
+router.post("/login", protect, login);
 
 
 // router.get("/validate", protect, (req, res, next) => {

@@ -2,12 +2,11 @@ import { Request, Response, NextFunction } from "express";
 import catchAsync from "../utils/errorHandler";
 import { createSendToken } from "./authController";
 import AppError from "../utils/appError";
-import { User } from "../entity/Entities";
-import { userRepository } from "../dao/UserRepository";
-import { validate } from "class-validator";
+import userDBHandler from "../dao/UserRepository";
+import bcrypt from "bcryptjs";
 
 export const getUser = catchAsync(async (req: Request, res: Response) => {
-  const user = await userRepository.findOneBy({id: req.params.id});
+  const user = await userDBHandler.findById(req.params.id);
   res.status(201).json({
     status: "success",
     data: {
@@ -18,31 +17,29 @@ export const getUser = catchAsync(async (req: Request, res: Response) => {
 
 export const signup = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
-    let userData = new User();
-    Object.assign( userData, req.body)
-    // validate user data
-    validate(userData).then(errors => {
-      // errors is an array of validation errors
-      if (errors.length > 0) {
-        console.log('validation failed. errors: ', errors);
-      } else {
-        console.log('validation succeed');
-      }
-    });
+    console.log("test");
+    const userData = req.body;
+    const userFoundInDb = await userDBHandler.findByEmail(userData.email);
+    if (userFoundInDb) {
+      return next(new AppError("User with such email already exists", 401));
+    }
+    // Hash the password with cost of 12
+    userData.password = await bcrypt.hash(userData.password!, 12);
+    // Delete the password confirm field
+    userData.passwordConfirm = undefined;
 
-    const newUser = await userRepository.save(userData);
+    const newUser = await userDBHandler.add(userData);
     if (newUser) {
       createSendToken(newUser, 201, res);
-    }
-    else {
-      next(new AppError("Could not create the user!", 400))
+    } else {
+      next(new AppError("Could not create the user!", 400));
     }
   }
 );
 
 // TODO: Validate that update is coming either from admin or from the user itself by confirming token is for the same user as the updates
 export const updateUser = catchAsync(async (req: Request, res: Response) => {
-  const updatedUser = await userRepository.update(req.params.id, req.body);
+  const updatedUser = await userDBHandler.update(req.params.id, req.body);
 
   res.status(201).json({
     status: "success",
@@ -64,7 +61,6 @@ export const updateUser = catchAsync(async (req: Request, res: Response) => {
 //   });
 // });
 
-
 // // Do I need to get all users?
 // export const getAllUsers = catchAsync(async (req: Request, res: Response) => {
 //   const users = await userDBHandler.findByQuery(req.query as Record <string, string>);
@@ -75,7 +71,6 @@ export const updateUser = catchAsync(async (req: Request, res: Response) => {
 //     },
 //   });
 // });
-
 
 // // DO I need to delete user?
 // export const deleteUser = catchAsync(async (req: Request, res: Response) => {

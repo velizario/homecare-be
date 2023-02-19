@@ -1,14 +1,13 @@
 import { Request, Response, NextFunction } from "express";
-// import { Document } from "mongoose";
 import { User } from "../entity/Entities";
 import catchAsync from "../utils/errorHandler";
 import jwt, { JwtPayload } from "jsonwebtoken";
-import { userRepository } from "../dao/UserRepository";
+import userDBHandler, { userRepository } from "../dao/UserRepository";
 import AppError from "../utils/appError";
 import validatePassword from "../utils/validatePassword";
 
 const signToken = (id: string) => {
-  const token = jwt.sign(id, process.env.JWT_SECRET, {
+  const token = jwt.sign({id: id}, process.env.JWT_SECRET, {
     expiresIn: process.env.JWT_EXPIRES_IN,
   });
   return token;
@@ -54,8 +53,8 @@ export const login = catchAsync(
       return next(new AppError("Please provide email and password!", 400));
     }
     // Check if the user exists and password is correct
-    const user = await userRepository.findOneBy({ email });
-    if (!user || !(await validatePassword(password, user.password!)))
+    const user = await userDBHandler.findByEmail(email);
+    if (!user || !(await validatePassword(password, user.password)))
       return next(new AppError("Incorrect email or password", 401));
 
     // Send the token to the user
@@ -86,7 +85,7 @@ export const protect = catchAsync(
 
     // 3) Check if user still exists (might have been deleted)
 
-    const freshUser = await userRepository.findOne(decoded.id.toString());
+    const freshUser = await userDBHandler.findById(decoded.id.toString());
     if (!freshUser) {
       return next(new AppError("The user does not longer exist", 401));
     }
