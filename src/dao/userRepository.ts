@@ -3,6 +3,7 @@ import { UpdateResult } from "typeorm";
 import { AppDataSource } from "../DBConnectorData";
 import { Client, User, Vendor } from "../entity/Entities";
 import AppError from "../utils/appError";
+import valdiateObjToEntity from "../utils/validateObjToEntity";
 
 export const userRepository = AppDataSource.getRepository(User);
 export const vendorRepository = AppDataSource.getRepository(Vendor);
@@ -14,7 +15,8 @@ interface UserRepositoryInterface {
   findClients(): Promise<Client[] | null>;
   findVendors(): Promise<Vendor[] | null>;
   findAll(): Promise<User[] | null>;
-  add(data: User): Promise<User | null>;
+  addUser(data: User): Promise<User | null>;
+  // addVendor(id: string, vendorData: User): Promise<User | null>;
   update(id: string, data: User): Promise<UpdateResult> ;
 }
 
@@ -39,18 +41,27 @@ class UserRepository implements UserRepositoryInterface {
     return await vendorRepository.find();
   }
 
-  async add(data: User): Promise<User | null> {
+  async addUser(data: User): Promise<User | null> {
     // assign data object to an instance of User and validate the data
-    let userInstance = new User();
-    Object.assign(userInstance, data);
-    const errors = await validate(userInstance);
-    if (errors.length > 0) throw new AppError("Validation error", 401, errors);
+    await valdiateObjToEntity<User>(data, User);
     return await userRepository.save(data);
   }
 
   async update(id: string, data: User) {
     return await userRepository.update(id, data);
   }
+
+  async addVendor(id: string, vendorData: Vendor) {
+    await valdiateObjToEntity<Vendor>(vendorData, Vendor);
+    // const test = await vendorRepository.findOneBy({userId: id})
+    const userData = await this.findById(id)
+    if (!userData) throw new AppError("No such user in Database", 404)
+    userData.vendor = vendorData;
+    console.log(userData)
+    return await this.addUser(userData);
+    // return await vendorRepository.save(vendorData)
+  };
+
 }
 
 const userDBHandler = new UserRepository();

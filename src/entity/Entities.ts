@@ -11,6 +11,7 @@ import {
   ManyToOne,
   OneToMany,
   Relation,
+  PrimaryColumn,
 } from "typeorm";
 
 export enum VisitFrequency {
@@ -64,7 +65,7 @@ export class User {
   @OneToOne(() => Client, (client) => client.user)
   client: Relation<Client>;
 
-  @OneToOne(() => Vendor, (vendor) => vendor.user)
+  @OneToOne(() => Vendor, (vendor) => vendor.user, {cascade: true})
   vendor: Relation<Vendor>;
 }
 
@@ -86,21 +87,28 @@ export class Vendor {
   @PrimaryGeneratedColumn()
   id: string;
 
-  @Column()
+  @Column("varchar", { length: 50, nullable: true })
+  @IsOptional()
   @IsUrl()
   webPage: string;
 
-  @Column()
+  @Column("varchar", { length: 50, nullable: true })
+  @IsOptional()
   @IsUrl()
   instagram: string;
 
-  @Column()
+  @Column("varchar", { length: 50, nullable: true })
+  @IsOptional()
   @IsUrl()
   facebook: string;
 
   @OneToOne(() => User, (user) => user.vendor)
   @JoinColumn()
   user: User;
+
+  @Column({ nullable: true })
+  @IsOptional()
+  userId: string
 
   @ManyToMany(() => District, (district) => district.vendor)
   servedDistrict: District[];

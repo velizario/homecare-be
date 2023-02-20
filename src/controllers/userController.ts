@@ -28,7 +28,7 @@ export const signup = catchAsync(
     // Delete the password confirm field
     userData.passwordConfirm = undefined;
 
-    const newUser = await userDBHandler.add(userData);
+    const newUser = await userDBHandler.addUser(userData);
     if (newUser) {
       createSendToken(newUser, 201, res);
     } else {
@@ -48,6 +48,17 @@ export const updateUser = catchAsync(async (req: Request, res: Response) => {
     },
   });
 });
+
+export const addVendor = catchAsync(async (req: Request, res: Response) => {
+  console.log("!!!!!!!!!!!!!!!!adding vendor")
+    const userWithVendor = await userDBHandler.addVendor(req.params.id, req.body);
+    res.status(201).json({
+      status: "success",
+      data: {
+        user: userWithVendor,
+      },
+    });
+})
 
 // // Do I need to create user except when signing-up?
 // export const createUser = catchAsync(async (req: Request, res: Response) => {

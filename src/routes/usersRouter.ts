@@ -7,6 +7,7 @@ import {
   getUser,
   updateUser,
   signup,
+  addVendor,
 } from "../controllers/userController";
 
 // User Router
@@ -19,6 +20,9 @@ router.use("/signup", signup);
 
 // login route
 router.post("/login", protect, login);
+
+// add vendor route
+router.post("/addVendor/:id", addVendor);
 
 
 // router.get("/validate", protect, (req, res, next) => {
