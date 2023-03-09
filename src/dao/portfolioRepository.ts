@@ -6,7 +6,7 @@ export const portfolioRepository = AppDataSource.getRepository(Portfolio);
 
 interface PortfolioRepositoryInterface {
   // findByVendorId(vendorId: string): Promise<Portfolio | null>;
-  findAll(): Promise<Portfolio[] | null>;
+  findAllUsers(): Promise<Portfolio[] | null>;
   // addService(vendorId: string, service: Service): Promise<Portfolio | null>
   // remove(vendorId: string, service: Portfolio): Promise<Portfolio | null>
 }
@@ -17,7 +17,7 @@ class PortfolioRepository implements PortfolioRepositoryInterface {
     
   // }
 
-  async findAll(): Promise<Portfolio[] | null> {
+  async findAllUsers(): Promise<Portfolio[] | null> {
     return await portfolioRepository.find();
   }
 

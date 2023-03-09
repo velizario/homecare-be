@@ -7,7 +7,7 @@ import {
   getUser,
   updateUser,
   signup,
-  addVendor,
+  // addVendor,
 } from "../controllers/userController";
 
 // User Router
@@ -19,10 +19,10 @@ const router = express.Router();
 router.use("/signup", signup);
 
 // login route
-router.post("/login", protect, login);
+router.post("/login", login);
 
-// add vendor route
-router.post("/addVendor/:id", addVendor);
+// add vendor route. Why would I need it?
+// router.post("/addVendor/:id", addVendor);
 
 
 // router.get("/validate", protect, (req, res, next) => {

@@ -47,13 +47,14 @@ export const createSendToken = (
 
 export const login = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
+    console.log("login")
     const { email, password } = req.body as User;
     // Check if email and password exist
     if (!email || !password) {
       return next(new AppError("Please provide email and password!", 400));
     }
     // Check if the user exists and password is correct
-    const user = await userDBHandler.findByEmail(email);
+    const user = await userDBHandler.findUserByEmail(email);
     if (!user || !(await validatePassword(password, user.password)))
       return next(new AppError("Incorrect email or password", 401));
 
@@ -65,6 +66,7 @@ export const login = catchAsync(
 // Validates token and allows further routing
 export const protect = catchAsync(
   async (req: Request, res: Response, next: NextFunction, email?: string) => {
+    console.log("protect")
     // 1) Get token and
     // Token is sent by the user in the header in format { Authorization : Bearer token }
     let token;
@@ -85,7 +87,7 @@ export const protect = catchAsync(
 
     // 3) Check if user still exists (might have been deleted)
 
-    const freshUser = await userDBHandler.findById(decoded.id.toString());
+    const freshUser = await userDBHandler.findUserById(decoded.id.toString());
     if (!freshUser) {
       return next(new AppError("The user does not longer exist", 401));
     }

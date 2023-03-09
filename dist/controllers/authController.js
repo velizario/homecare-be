@@ -38,7 +38,7 @@ export const login = catchAsync(async (req, res, next) => {
         return next(new AppError("Please provide email and password!", 400));
     }
     // Check if the user exists and password is correct
-    const user = await userDBHandler.findByEmail(email, true);
+    const user = await userDBHandler.findUserByEmail(email, true);
     if (!user || !(await validatePassword(password, user.password)))
         return next(new AppError("Incorrect email or password", 401));
     // Send the token to the user
@@ -61,7 +61,7 @@ export const protect = catchAsync(async (req, res, next) => {
     //NOTE: synchronously - blocks the thread.
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     // 3) Check if user still exists (might have been deleted)
-    const freshUser = await userDBHandler.findById(decoded.id.toString());
+    const freshUser = await userDBHandler.findUserById(decoded.id.toString());
     if (!freshUser) {
         return next(new AppError("The user does not longer exist", 401));
     }

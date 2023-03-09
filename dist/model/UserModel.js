@@ -86,7 +86,7 @@ export const userSchema = new mongoose.Schema({
 }, { timestamps: true });
 // encode password before saving to database
 userSchema.pre("save", async function (next) {
-    const userFoundInDb = await userDBHandler.findByEmail(this.email);
+    const userFoundInDb = await userDBHandler.findUserByEmail(this.email);
     if (userFoundInDb) {
         return next(new AppError("User with such email already exists", 401));
     }

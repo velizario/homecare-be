@@ -2,7 +2,7 @@ import catchAsync from "../utils/errorHandler";
 import { userDBHandler } from "../dao/UserRepository";
 import { createSendToken } from "./authController";
 export const getUser = catchAsync(async (req, res) => {
-    const user = await userDBHandler.findById(req.params.id);
+    const user = await userDBHandler.findUserById(req.params.id);
     res.status(201).json({
         status: "success",
         data: {

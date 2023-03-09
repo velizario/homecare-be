@@ -10,34 +10,34 @@ export const vendorRepository = AppDataSource.getRepository(Vendor);
 export const clientRepository = AppDataSource.getRepository(Client);
 
 interface UserRepositoryInterface {
-  findById(id: string): Promise<User | null>;
-  findByEmail(email: string): Promise<User | null>;
-  findClients(): Promise<Client[] | null>;
-  findVendors(): Promise<Vendor[] | null>;
-  findAll(): Promise<User[] | null>;
+  findUserById(id: string): Promise<User | null>;
+  findUserByEmail(email: string): Promise<User | null>;
+  findAllUsers(): Promise<User[] | null>;
+  findAllClients(): Promise<Client[] | null>;
+  findAllVendors(): Promise<Vendor[] | null>;
   addUser(data: User): Promise<User | null>;
   // addVendor(id: string, vendorData: User): Promise<User | null>;
-  update(id: string, data: User): Promise<UpdateResult> ;
+  update(id: string, data: User): Promise<UpdateResult>;
 }
 
 class UserRepository implements UserRepositoryInterface {
-  async findById(id: string) {
+  async findUserById(id: string) {
     return await userRepository.findOneBy({ id: id });
   }
 
-  async findByEmail(email: string): Promise<User | null> {
+  async findUserByEmail(email: string): Promise<User | null> {
     return await userRepository.findOneBy({ email: email });
   }
 
-  async findAll(): Promise<User[] | null> {
+  async findAllUsers(): Promise<User[] | null> {
     return await userRepository.find();
   }
 
-  async findClients(): Promise<Client[] | null> {
+  async findAllClients(): Promise<Client[] | null> {
     return await clientRepository.find();
   }
 
-  async findVendors(): Promise<Vendor[] | null> {
+  async findAllVendors(): Promise<Vendor[] | null> {
     return await vendorRepository.find();
   }
 
@@ -54,7 +54,7 @@ class UserRepository implements UserRepositoryInterface {
   async addVendor(id: string, vendorData: Vendor) {
     await valdiateObjToEntity<Vendor>(vendorData, Vendor);
     // const test = await vendorRepository.findOneBy({userId: id})
-    const userData = await this.findById(id)
+    const userData = await this.findUserById(id)
     if (!userData) throw new AppError("No such user in Database", 404)
     userData.vendor = vendorData;
     console.log(userData)
@@ -72,7 +72,7 @@ export default userDBHandler;
 // import { MongoRepository } from "./MongoRepository";
 
 // interface UserRepositoryInterface<UserModel> extends MongoRepository<UserModel> {
-//   findByEmail (email: string, returnPass: boolean) : Promise<HydratedDocument<UserModel> | null>;
+//   findUserByEmail (email: string, returnPass: boolean) : Promise<HydratedDocument<UserModel> | null>;
 // }
 
 // class UserRepository<T extends UserModel> extends MongoRepository<UserModel> implements UserRepositoryInterface<UserModel> {
@@ -80,7 +80,7 @@ export default userDBHandler;
 //     super(model);
 //   }
 
-//   async findByEmail(
+//   async findUserByEmail(
 //     email: string, returnPass = false
 //   ): Promise<HydratedDocument<UserModel> | null> {
 //     let query = this.model.findOne({ email: email });

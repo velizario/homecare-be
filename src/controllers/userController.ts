@@ -1,3 +1,9 @@
+// signup user
+// Update user
+// list vendors
+// show vendor details
+// show client details
+
 import { Request, Response, NextFunction } from "express";
 import catchAsync from "../utils/errorHandler";
 import { createSendToken } from "./authController";
@@ -6,7 +12,7 @@ import userDBHandler from "../dao/UserRepository";
 import bcrypt from "bcryptjs";
 
 export const getUser = catchAsync(async (req: Request, res: Response) => {
-  const user = await userDBHandler.findById(req.params.id);
+  const user = await userDBHandler.findUserById(req.params.id);
   res.status(201).json({
     status: "success",
     data: {
@@ -19,7 +25,13 @@ export const signup = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     console.log("test");
     const userData = req.body;
-    const userFoundInDb = await userDBHandler.findByEmail(userData.email);
+    // Split user and client/vendor data. 
+    const {webPage, instagram, facebook, ...userClean } = userData;
+    const vendorData = { webPage, instagram, facebook}
+    // NOTE: No specific client data at this point.
+    const clientData = {}
+    
+    const userFoundInDb = await userDBHandler.findUserByEmail(userData.email);
     if (userFoundInDb) {
       return next(new AppError("User with such email already exists", 401));
     }
@@ -49,16 +61,17 @@ export const updateUser = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
-export const addVendor = catchAsync(async (req: Request, res: Response) => {
-  console.log("!!!!!!!!!!!!!!!!adding vendor")
-    const userWithVendor = await userDBHandler.addVendor(req.params.id, req.body);
-    res.status(201).json({
-      status: "success",
-      data: {
-        user: userWithVendor,
-      },
-    });
-})
+// Do I need to add vendor?
+// export const addVendor = catchAsync(async (req: Request, res: Response) => {
+//   console.log("!!!!!!!!!!!!!!!!adding vendor")
+//     const userWithVendor = await userDBHandler.addVendor(req.params.id, req.body);
+//     res.status(201).json({
+//       status: "success",
+//       data: {
+//         user: userWithVendor,
+//       },
+//     });
+// })
 
 // // Do I need to create user except when signing-up?
 // export const createUser = catchAsync(async (req: Request, res: Response) => {

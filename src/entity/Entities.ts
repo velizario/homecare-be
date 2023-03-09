@@ -11,7 +11,6 @@ import {
   ManyToOne,
   OneToMany,
   Relation,
-  PrimaryColumn,
 } from "typeorm";
 
 export enum VisitFrequency {
@@ -56,13 +55,16 @@ export class User {
   @Column()
   password: string;
 
+  @Column({default: false})
+  isSuspended: boolean;
+
   @Column()
   isVendor: boolean;
 
   @CreateDateColumn()
   createdAt: Date;
 
-  @OneToOne(() => Client, (client) => client.user)
+  @OneToOne(() => Client, (client) => client.user, {cascade: true})
   client: Relation<Client>;
 
   @OneToOne(() => Vendor, (vendor) => vendor.user, {cascade: true})
@@ -77,6 +79,10 @@ export class Client {
   @OneToOne(() => User, (user) => user.client)
   @JoinColumn()
   user: User;
+
+  @Column({ nullable: true })
+  @IsOptional()
+  userId: string
 
   @OneToMany(() => Event, (event) => event.client)
   events: Event[];

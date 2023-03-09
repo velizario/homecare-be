@@ -4,16 +4,16 @@ import { District } from "../entity/Entities";
 export const districtRepository = AppDataSource.getRepository(District);
 
 interface DistrictRepositoryInterface {
-  findById(id: string): Promise<District | null>;
-  findAll(): Promise<District[] | null>;
+  findUserById(id: string): Promise<District | null>;
+  findAllUsers(): Promise<District[] | null>;
 }
 
 class DistrictRepository implements DistrictRepositoryInterface {
-  async findById(id: string) {
+  async findUserById(id: string) {
     return await districtRepository.findOneBy({ id: id });
   }
 
-  async findAll(): Promise<District[] | null> {
+  async findAllUsers(): Promise<District[] | null> {
     return await districtRepository.find();
   }
 }

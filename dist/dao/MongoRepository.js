@@ -7,16 +7,16 @@ export class MongoRepository {
         const newDoc = await this.model.create(document);
         return newDoc;
     }
-    // if edit is not working correctly, remove back 'UpdateQuery and replace findByIdAndUpdate with findOneAndReplace
+    // if edit is not working correctly, remove back 'UpdateQuery and replace findUserByIdAndUpdate with findOneAndReplace
     async edit(id, document) {
-        const updatedDoc = await this.model.findByIdAndUpdate(id, document, {
+        const updatedDoc = await this.model.findUserByIdAndUpdate(id, document, {
             new: true,
             runValidators: true,
         });
         return updatedDoc;
     }
     async deleteById(id) {
-        return await this.model.findByIdAndDelete(id);
+        return await this.model.findUserByIdAndDelete(id);
     }
     async findByQuery(reqObj) {
         // Build query
@@ -59,8 +59,8 @@ export class MongoRepository {
         const data = await query;
         return data;
     }
-    async findById(id) {
-        const data = await this.model.findById(id).lean();
+    async findUserById(id) {
+        const data = await this.model.findUserById(id).lean();
         return data;
     }
 }

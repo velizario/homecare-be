@@ -4,7 +4,7 @@ class UserRepository extends MongoRepository {
     constructor(model) {
         super(model);
     }
-    async findByEmail(email, returnPass = false) {
+    async findUserByEmail(email, returnPass = false) {
         let query = this.model.findOne({ email: email });
         returnPass && (query = query.select("+password"));
         const user = await query;

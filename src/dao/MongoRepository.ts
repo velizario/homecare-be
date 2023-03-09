@@ -5,7 +5,7 @@ export interface Repository {}
 //   edit(id: string, document: UpdateQuery<T>): Promise<HydratedDocument<T> | null>;
 //   deleteById(id: string): Promise<HydratedDocument<T> | null>;
 //   findByQuery(reqObj: Record<string, string>): Promise<HydratedDocument<T>[]>;
-//   findById(id: string): Promise<T | null>;
+//   findUserById(id: string): Promise<T | null>;
 //   // getCount(): Promise<number>;
 // }
 
@@ -16,10 +16,10 @@ export interface Repository {}
 //     const newDoc = await this.model.create(document);
 //     return newDoc;
 //   }
-//   // if edit is not working correctly, remove back 'UpdateQuery and replace findByIdAndUpdate with findOneAndReplace
+//   // if edit is not working correctly, remove back 'UpdateQuery and replace findUserByIdAndUpdate with findOneAndReplace
 
 //   async edit(id: string, document: UpdateQuery<T>) {
-//     const updatedDoc = await this.model.findByIdAndUpdate(id, document, {
+//     const updatedDoc = await this.model.findUserByIdAndUpdate(id, document, {
 //       new: true,
 //       runValidators: true,
 //     });
@@ -27,7 +27,7 @@ export interface Repository {}
 //   }
 
 //   async deleteById(id: string) {
-//     return await this.model.findByIdAndDelete(id);
+//     return await this.model.findUserByIdAndDelete(id);
 //   }
 
 //   async findByQuery(reqObj: Record<string, string>) {
@@ -77,8 +77,8 @@ export interface Repository {}
 //     return data;
 //   }
 
-//   async findById(id: string): Promise<T | null> {
-//     const data: T = await this.model.findById(id).lean();
+//   async findUserById(id: string): Promise<T | null> {
+//     const data: T = await this.model.findUserById(id).lean();
 //     return data;
 //   }
 

@@ -132,7 +132,7 @@
 //   "save",
 //   async function (this: HydratedDocument<UserModel>, next) {
 //     // Check if user exists
-//     const userFoundInDb = await userDBHandler.findByEmail(this.email);
+//     const userFoundInDb = await userDBHandler.findUserByEmail(this.email);
 //     if (userFoundInDb) {
 //       return next(new AppError("User with such email already exists", 401));
 //     }
