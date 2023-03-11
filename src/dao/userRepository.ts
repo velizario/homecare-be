@@ -2,8 +2,9 @@ import { validate } from "class-validator";
 import { UpdateResult } from "typeorm";
 import { AppDataSource } from "../DBConnectorData";
 import { Client, User, Vendor } from "../entity/Entities";
+import { HydratedUser } from "../types/types";
 import AppError from "../utils/appError";
-import valdiateObjToEntity from "../utils/validateObjToEntity";
+import validateObjToEntity from "../utils/validateObjToEntity";
 
 export const userRepository = AppDataSource.getRepository(User);
 export const vendorRepository = AppDataSource.getRepository(Vendor);
@@ -12,7 +13,7 @@ export const clientRepository = AppDataSource.getRepository(Client);
 interface UserRepositoryInterface {
   findUserById(id: string): Promise<User | null>;
   findUserByEmail(email: string): Promise<User | null>;
-  findAllUsers(): Promise<User[] | null>;
+findAllUsers(): Promise<User[] | null>;
   findAllClients(): Promise<Client[] | null>;
   findAllVendors(): Promise<Vendor[] | null>;
   addUser(data: User): Promise<User | null>;
@@ -41,9 +42,9 @@ class UserRepository implements UserRepositoryInterface {
     return await vendorRepository.find();
   }
 
-  async addUser(data: User): Promise<User | null> {
+  async addUser(data: HydratedUser): Promise<User | null> {
     // assign data object to an instance of User and validate the data
-    await valdiateObjToEntity<User>(data, User);
+    await validateObjToEntity<HydratedUser>(data, User);
     return await userRepository.save(data);
   }
 
@@ -52,12 +53,11 @@ class UserRepository implements UserRepositoryInterface {
   }
 
   async addVendor(id: string, vendorData: Vendor) {
-    await valdiateObjToEntity<Vendor>(vendorData, Vendor);
+    await validateObjToEntity<Vendor>(vendorData, Vendor);
     // const test = await vendorRepository.findOneBy({userId: id})
     const userData = await this.findUserById(id)
     if (!userData) throw new AppError("No such user in Database", 404)
     userData.vendor = vendorData;
-    console.log(userData)
     return await this.addUser(userData);
     // return await vendorRepository.save(vendorData)
   };

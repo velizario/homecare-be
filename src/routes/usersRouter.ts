@@ -16,10 +16,10 @@ const router = express.Router();
 // router.route("/featured").get(featured, getAllUsers);
 
 // Signup route
-router.use("/signup", signup);
+router.use("/userSignup", signup);
 
 // login route
-router.post("/login", login);
+router.post("/userLogin", login);
 
 // add vendor route. Why would I need it?
 // router.post("/addVendor/:id", addVendor);

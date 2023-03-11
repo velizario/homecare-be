@@ -13,6 +13,13 @@ import {
   Relation,
 } from "typeorm";
 
+export enum Role {
+  ADMIN,
+  CLIENT,
+  VENDOR_COMPANY,
+  VENDOR_INDIVIDUAL,
+}
+
 export enum VisitFrequency {
   ONETIME,
   WEEKLY,
@@ -55,19 +62,19 @@ export class User {
   @Column()
   password: string;
 
-  @Column({default: false})
+  @Column({ default: false })
   isSuspended: boolean;
 
-  @Column()
-  isVendor: boolean;
+  @Column("varchar", { array: true })
+  roles: Role[];
 
   @CreateDateColumn()
   createdAt: Date;
 
-  @OneToOne(() => Client, (client) => client.user, {cascade: true})
+  @OneToOne(() => Client, (client) => client.user, { cascade: true })
   client: Relation<Client>;
 
-  @OneToOne(() => Vendor, (vendor) => vendor.user, {cascade: true})
+  @OneToOne(() => Vendor, (vendor) => vendor.user, { cascade: true })
   vendor: Relation<Vendor>;
 }
 
@@ -82,7 +89,7 @@ export class Client {
 
   @Column({ nullable: true })
   @IsOptional()
-  userId: string
+  userId: string;
 
   @OneToMany(() => Event, (event) => event.client)
   events: Event[];
@@ -92,6 +99,9 @@ export class Client {
 export class Vendor {
   @PrimaryGeneratedColumn()
   id: string;
+
+  @Column("varchar", { length: 50 })
+  companyName: string;
 
   @Column("varchar", { length: 50, nullable: true })
   @IsOptional()
@@ -114,7 +124,7 @@ export class Vendor {
 
   @Column({ nullable: true })
   @IsOptional()
-  userId: string
+  userId: string;
 
   @ManyToMany(() => District, (district) => district.vendor)
   servedDistrict: District[];
@@ -122,7 +132,7 @@ export class Vendor {
   @OneToOne(() => Portfolio, (prices) => prices.vendor)
   portfolio: Relation<Portfolio>;
 
-  @OneToOne(()=> Schedule, (schedule) => schedule.vendor)
+  @OneToOne(() => Schedule, (schedule) => schedule.vendor)
   schedule: Relation<Schedule>;
 
   @OneToMany(() => Event, (event) => event.client)
@@ -172,7 +182,7 @@ export class WeekdayAvailability {
   @Column()
   weekday: DayOfWeek;
 
-  @Column("date", {array: true})
+  @Column("date", { array: true })
   activeHours: Date[];
 
   @ManyToOne(() => Schedule, (schedule) => schedule.availability)

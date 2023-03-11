@@ -10,6 +10,8 @@ import { createSendToken } from "./authController";
 import AppError from "../utils/appError";
 import userDBHandler from "../dao/UserRepository";
 import bcrypt from "bcryptjs";
+import hydrateUserData from "../utils/hydrateUserData";
+import { HydratedUser, UserUnion } from "../types/types";
 
 export const getUser = catchAsync(async (req: Request, res: Response) => {
   const user = await userDBHandler.findUserById(req.params.id);
@@ -23,24 +25,19 @@ export const getUser = catchAsync(async (req: Request, res: Response) => {
 
 export const signup = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
-    console.log("test");
-    const userData = req.body;
+    const data: UserUnion = req.body;
     // Split user and client/vendor data. 
-    const {webPage, instagram, facebook, ...userClean } = userData;
-    const vendorData = { webPage, instagram, facebook}
-    // NOTE: No specific client data at this point.
-    const clientData = {}
-    
-    const userFoundInDb = await userDBHandler.findUserByEmail(userData.email);
+
+    const HydratedUser: HydratedUser = hydrateUserData(data);
+    console.log(HydratedUser);
+    const userFoundInDb = await userDBHandler.findUserByEmail(HydratedUser.email);
     if (userFoundInDb) {
       return next(new AppError("User with such email already exists", 401));
     }
     // Hash the password with cost of 12
-    userData.password = await bcrypt.hash(userData.password!, 12);
-    // Delete the password confirm field
-    userData.passwordConfirm = undefined;
+    HydratedUser.password = await bcrypt.hash(HydratedUser.password, 12);
 
-    const newUser = await userDBHandler.addUser(userData);
+    const newUser = await userDBHandler.addUser(HydratedUser);
     if (newUser) {
       createSendToken(newUser, 201, res);
     } else {

@@ -34,13 +34,14 @@ export const createSendToken = (
     // sameSite: "lax",
   });
 
-  user.password = "";
+  // Remove password and any other unnecessary data
+  const {password, ...userStripped } = user;
 
   res.status(statusCode).json({
     status: "success",
     token,
     data: {
-      user,
+      user: userStripped,
     },
   });
 };

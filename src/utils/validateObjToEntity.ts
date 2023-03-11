@@ -3,7 +3,7 @@
 import { validate } from "class-validator";
 import AppError from "./appError";
 
-export default async function valdiateObjToEntity<T extends Record<string, any>>(data: T, Entity: new () => T) {
+export default async function validateObjToEntity<T extends Record<string, any>>(data: T, Entity: new () => T) {
   // create new instance of the class against which data will be validated
   let instance = new Entity();
   // assign data to the instance
