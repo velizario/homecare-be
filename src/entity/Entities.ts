@@ -65,7 +65,7 @@ export class User {
   @Column({ default: false })
   isSuspended: boolean;
 
-  @Column("varchar", { array: true })
+  @Column("smallint", { array: true })
   roles: Role[];
 
   @CreateDateColumn()

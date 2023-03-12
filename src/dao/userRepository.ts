@@ -1,4 +1,3 @@
-import { validate } from "class-validator";
 import { UpdateResult } from "typeorm";
 import { AppDataSource } from "../DBConnectorData";
 import { Client, User, Vendor } from "../entity/Entities";

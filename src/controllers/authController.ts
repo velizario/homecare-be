@@ -40,9 +40,7 @@ export const createSendToken = (
   res.status(statusCode).json({
     status: "success",
     token,
-    data: {
-      user: userStripped,
-    },
+    data: userStripped,
   });
 };
 
