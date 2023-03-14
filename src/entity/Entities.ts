@@ -1,4 +1,4 @@
-import { IsUrl, Length, IsEmail, IsOptional } from "class-validator";
+import { IsUrl, Length, IsEmail, IsOptional, IsPhoneNumber } from "class-validator";
 import {
   Entity,
   PrimaryGeneratedColumn,
@@ -50,6 +50,11 @@ export class User {
   @Length(2, 30)
   lastName: string;
 
+  @Column("varchar", { length: 20, nullable: true })
+  @IsOptional()
+  @IsPhoneNumber("BG")
+phone: string;
+
   @Column("varchar", { length: 100, nullable: true })
   @IsOptional()
   @IsUrl()
@@ -72,9 +77,11 @@ export class User {
   createdAt: Date;
 
   @OneToOne(() => Client, (client) => client.user, { cascade: true })
+  @JoinColumn()
   client: Relation<Client>;
 
   @OneToOne(() => Vendor, (vendor) => vendor.user, { cascade: true })
+  @JoinColumn()
   vendor: Relation<Vendor>;
 }
 
@@ -100,7 +107,6 @@ export class Client {
   district: string;
 
   @OneToOne(() => User, (user) => user.client)
-  @JoinColumn()
   user: User;
 
 
@@ -133,7 +139,6 @@ export class Vendor {
   facebook: string;
 
   @OneToOne(() => User, (user) => user.vendor)
-  @JoinColumn()
   user: User;
 
   @Column({ nullable: true })

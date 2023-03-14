@@ -16,7 +16,6 @@ import fileUpload from "express-fileupload";
 import mime from "mime";
 import { IMAGE_PATH } from "../utils/staticData";
 
-
 export const getUser = catchAsync(async (req: Request, res: Response) => {
   const user = await userDBHandler.findUserById(req.params.id);
   res.status(201).json({
@@ -27,19 +26,21 @@ export const getUser = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
-export const getLoggedInUser = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
-  if (!req.user) return next(new AppError("User with such email already exists", 401));
-  const user = await userDBHandler.findUserById(req.user.id);
-  res.status(201).json({
-    status: "success",
-    data: {
-      user,
-    },
-  });
-});
+export const getLoggedInUser = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    if (!req.user)
+      return next(new AppError("User with such email already exists", 401));
+    const user = await userDBHandler.findUserById(req.user.id);
+    if (!user) return next(new AppError("User does not exist exists", 401));
+    createSendToken(req.user, 200, res)
+  }
+);
 
-
-export const imageUpload = (req: Request, res: Response, next: NextFunction) => {
+export const imageUpload = (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   // Log the files to the console
   if (!req.files) {
     console.log("no file!");
@@ -59,9 +60,9 @@ export const imageUpload = (req: Request, res: Response, next: NextFunction) => 
       return next(new AppError(err, 500));
     }
     userDBHandler.updateUserImage(req.user!.id, image.name);
-    return res.status(200).json({ status: "uploaded" });
+    res.status(200).json({ status: "success" });
   });
-}
+};
 
 export const signup = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {

@@ -3,6 +3,7 @@ import { HydratedUser, UserUnion } from "../types/types";
 
 export default function hydrateUserData (data: UserUnion) {
     // also remove passwordConfirm from the initial request
+    console.log("start hydrating")
     const {webSite, instagram, facebook, companyName, passwordConfirm, ...rest  } = data;
     const userHydrated: HydratedUser = Object.assign({}, rest)
     const vendorData: Partial<Vendor> = { companyName, webSite, instagram, facebook}

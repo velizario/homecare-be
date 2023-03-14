@@ -26,11 +26,13 @@ class UserRepository implements UserRepositoryInterface {
     const user = await this.findUserById(userId);
     if (!user) throw new AppError("No such user in Database", 404)
     user.imageUrl = imageUrl;
-    this.updateUser(userId, user);
+    return await this.updateUser(userId, user);
   }
 
   async findUserById(id: string) {
-    return await userRepository.findOneBy({ id: id });
+    const test = await userRepository.findOne({where : {id: id }, relations: {vendor: true}});
+    console.log("!!!!!!!!!!!!!!!!", test)
+    return test;
   }
 
   async findUserByEmail(email: string): Promise<User | null> {
