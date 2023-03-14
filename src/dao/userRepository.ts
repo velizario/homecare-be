@@ -12,15 +12,23 @@ export const clientRepository = AppDataSource.getRepository(Client);
 interface UserRepositoryInterface {
   findUserById(id: string): Promise<User | null>;
   findUserByEmail(email: string): Promise<User | null>;
-findAllUsers(): Promise<User[] | null>;
+  findAllUsers(): Promise<User[] | null>;
   findAllClients(): Promise<Client[] | null>;
   findAllVendors(): Promise<Vendor[] | null>;
   addUser(data: User): Promise<User | null>;
+  // updateImage(userId: string) : Promise<
   // addVendor(id: string, vendorData: User): Promise<User | null>;
-  update(id: string, data: User): Promise<UpdateResult>;
+  updateUser(id: string, data: User): Promise<UpdateResult>;
 }
 
 class UserRepository implements UserRepositoryInterface {
+  async updateUserImage(userId: string, imageUrl: string) {
+    const user = await this.findUserById(userId);
+    if (!user) throw new AppError("No such user in Database", 404)
+    user.imageUrl = imageUrl;
+    this.updateUser(userId, user);
+  }
+
   async findUserById(id: string) {
     return await userRepository.findOneBy({ id: id });
   }
@@ -47,20 +55,19 @@ class UserRepository implements UserRepositoryInterface {
     return await userRepository.save(data);
   }
 
-  async update(id: string, data: User) {
+  async updateUser(id: string, data: User) {
     return await userRepository.update(id, data);
   }
 
   async addVendor(id: string, vendorData: Vendor) {
     await validateObjToEntity<Vendor>(vendorData, Vendor);
     // const test = await vendorRepository.findOneBy({userId: id})
-    const userData = await this.findUserById(id)
-    if (!userData) throw new AppError("No such user in Database", 404)
+    const userData = await this.findUserById(id);
+    if (!userData) throw new AppError("No such user in Database", 404);
     userData.vendor = vendorData;
     return await this.addUser(userData);
     // return await vendorRepository.save(vendorData)
-  };
-
+  }
 }
 
 const userDBHandler = new UserRepository();

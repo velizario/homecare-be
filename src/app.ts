@@ -10,7 +10,7 @@ import globalErrorHandler from "./utils/errorController";
 export const app = express();
 
 // Security http headers
-app.use(helmet());
+app.use(helmet.crossOriginResourcePolicy({ policy: "cross-origin" })); //allow getting images from cross domains
 app.use(
   morgan(
     '[:date[clf]] :remote-user ":method :url HTTP/:http-version" Status: :status Response time: :response-time ms'

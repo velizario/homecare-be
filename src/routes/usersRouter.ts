@@ -1,14 +1,15 @@
 import * as express from "express";
-import {
-  login,
-  protect,
-} from "../controllers/authController";
+import { login, protect } from "../controllers/authController";
 import {
   getUser,
   updateUser,
   signup,
+  imageUpload,
+  getLoggedInUser,
   // addVendor,
 } from "../controllers/userController";
+import fileUpload from "express-fileupload";
+import { IMAGE_PATH } from "../utils/staticData";
 
 // User Router
 const router = express.Router();
@@ -21,18 +22,35 @@ router.use("/userSignup", signup);
 // login route
 router.post("/userLogin", login);
 
-// add vendor route. Why would I need it?
-// router.post("/addVendor/:id", addVendor);
+// get user data route
+router.get("/userGet", protect, getLoggedInUser);
 
+// get image route
+// let options = {
+//   dotfiles: "ignore",
+//   etag: false,
+//   extensions: ["htm", "html"],
+//   index: false,
+//   maxAge: "1d",
+//   redirect: false,
+// };
 
-// router.get("/validate", protect, (req, res, next) => {
-//   res.send(req.User);
-// });
+router.route("/:id").get(getUser).patch(updateUser);
+// .delete(protect, restrictTo(Role.ADMIN), deleteUser);
 
-router
-  .route("/:id")
-  .get(getUser)
-  .patch(updateUser)
-  // .delete(protect, restrictTo(Role.ADMIN), deleteUser);
+// Use the express-fileupload middleware
+router.use(
+  fileUpload({
+    limits: {
+      fileSize: 10000000, // Around 10MB
+    },
+    abortOnLimit: true,
+  })
+);
+
+router.post("/upload", protect, imageUpload);
+
+// add protect
+router.use("/public", express.static(IMAGE_PATH));
 
 export default router;

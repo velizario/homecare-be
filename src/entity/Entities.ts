@@ -82,17 +82,31 @@ export class User {
 export class Client {
   @PrimaryGeneratedColumn()
   id: string;
+  
+  @Column({ nullable: true })
+  @IsOptional()
+  userId: string;
+  
+  @Column({ nullable: true })
+  @IsOptional()
+  address: string;
+
+  @Column({ nullable: true })
+  @IsOptional()
+  city: string;
+
+  @Column({ nullable: true })
+  @IsOptional()
+  district: string;
 
   @OneToOne(() => User, (user) => user.client)
   @JoinColumn()
   user: User;
 
-  @Column({ nullable: true })
-  @IsOptional()
-  userId: string;
 
   @OneToMany(() => Event, (event) => event.client)
   events: Event[];
+
 }
 
 @Entity()
@@ -106,7 +120,7 @@ export class Vendor {
   @Column("varchar", { length: 50, nullable: true })
   @IsOptional()
   @IsUrl()
-  webPage: string;
+  webSite: string;
 
   @Column("varchar", { length: 50, nullable: true })
   @IsOptional()

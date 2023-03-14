@@ -1,3 +1,5 @@
+import path from "path";
+
 export const cleaningCategories = [
     "Гладене",
     "Почистване на печка от вътре",
@@ -8,3 +10,9 @@ export const cleaningCategories = [
   ]
 
 export default cleaningCategories;
+
+
+export const IMAGE_PATH = path.join(
+  path.resolve(__dirname).split("\\src\\")[0],
+  "public"
+);
