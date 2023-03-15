@@ -6,7 +6,6 @@ import AppError from "../utils/appError";
 import validateObjToEntity from "../utils/validateObjToEntity";
 
 export const userRepository = AppDataSource.getRepository(User);
-export const vendorRepository = AppDataSource.getRepository(Vendor);
 export const clientRepository = AppDataSource.getRepository(Client);
 
 interface UserRepositoryInterface {
@@ -14,7 +13,7 @@ interface UserRepositoryInterface {
   findUserByEmail(email: string): Promise<User | null>;
   findAllUsers(): Promise<User[] | null>;
   findAllClients(): Promise<Client[] | null>;
-  findAllVendors(): Promise<Vendor[] | null>;
+
   addUser(data: User): Promise<User | null>;
   // updateImage(userId: string) : Promise<
   // addVendor(id: string, vendorData: User): Promise<User | null>;
@@ -47,9 +46,6 @@ class UserRepository implements UserRepositoryInterface {
     return await clientRepository.find();
   }
 
-  async findAllVendors(): Promise<Vendor[] | null> {
-    return await vendorRepository.find();
-  }
 
   async addUser(data: HydratedUser): Promise<User | null> {
     // assign data object to an instance of User and validate the data

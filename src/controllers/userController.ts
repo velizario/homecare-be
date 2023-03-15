@@ -1,9 +1,3 @@
-// signup user
-// Update user
-// list vendors
-// show vendor details
-// show client details
-
 import { Request, Response, NextFunction } from "express";
 import catchAsync from "../utils/errorHandler";
 import { createSendToken } from "./authController";

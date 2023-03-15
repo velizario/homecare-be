@@ -25,23 +25,10 @@ router.post("/userLogin", login);
 // get user data route
 router.get("/userGet", protect, getLoggedInUser);
 
-// Update user
-router.get("/userGet", protect, getLoggedInUser);
-
-// get image route
-// let options = {
-//   dotfiles: "ignore",
-//   etag: false,
-//   extensions: ["htm", "html"],
-//   index: false,
-//   maxAge: "1d",
-//   redirect: false,
-// };
-
+// get and patch user
 router.route("/:id").get(getUser).patch(updateUser);
-// .delete(protect, restrictTo(Role.ADMIN), deleteUser);
 
-// Use the express-fileupload middleware
+// Fileupload
 router.use(
   fileUpload({
     limits: {

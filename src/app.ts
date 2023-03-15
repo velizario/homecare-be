@@ -4,6 +4,7 @@ import helmet from "helmet";
 import morgan from "morgan";
 import bookingsRouter from "./routes/bookingsRouter";
 import usersRouter from "./routes/usersRouter";
+import vendorsRouter from "./routes/vendorsRouter";
 import AppError from "./utils/appError";
 import globalErrorHandler from "./utils/errorController";
 
@@ -45,6 +46,9 @@ app.options("/*", (_, res) => {
 
 // Users Router
 app.use("/api/v1/users", usersRouter);
+
+// Vendors Router
+app.use("/api/v1/vendors", vendorsRouter);
 
 // Bookings Router
 app.use("/api/v1/bookings", bookingsRouter);
