@@ -25,6 +25,9 @@ router.post("/userLogin", login);
 // get user data route
 router.get("/userGet", protect, getLoggedInUser);
 
+// Update user
+router.get("/userGet", protect, getLoggedInUser);
+
 // get image route
 // let options = {
 //   dotfiles: "ignore",

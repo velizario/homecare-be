@@ -1,4 +1,11 @@
-import { IsUrl, Length, IsEmail, IsOptional, IsPhoneNumber } from "class-validator";
+import {
+  IsUrl,
+  Length,
+  IsEmail,
+  IsOptional,
+  IsPhoneNumber,
+  MinLength,
+} from "class-validator";
 import {
   Entity,
   PrimaryGeneratedColumn,
@@ -53,7 +60,7 @@ export class User {
   @Column("varchar", { length: 20, nullable: true })
   @IsOptional()
   @IsPhoneNumber("BG")
-phone: string;
+  phone: string;
 
   @Column("varchar", { length: 100, nullable: true })
   @IsOptional()
@@ -80,20 +87,24 @@ phone: string;
   @JoinColumn()
   client: Relation<Client>;
 
+  @Column({ nullable: true })
+  @IsOptional()
+  clientId: string;
+
   @OneToOne(() => Vendor, (vendor) => vendor.user, { cascade: true })
   @JoinColumn()
   vendor: Relation<Vendor>;
+
+  @Column({ nullable: true })
+  @IsOptional()
+  vendorId: string;
 }
 
 @Entity()
 export class Client {
   @PrimaryGeneratedColumn()
   id: string;
-  
-  @Column({ nullable: true })
-  @IsOptional()
-  userId: string;
-  
+
   @Column({ nullable: true })
   @IsOptional()
   address: string;
@@ -109,10 +120,12 @@ export class Client {
   @OneToOne(() => User, (user) => user.client)
   user: User;
 
+  // @Column({ nullable: true })
+  // @IsOptional()
+  // userId: string;
 
   @OneToMany(() => Event, (event) => event.client)
   events: Event[];
-
 }
 
 @Entity()
@@ -123,10 +136,15 @@ export class Vendor {
   @Column("varchar", { length: 50 })
   companyName: string;
 
+  @Column("varchar", { nullable: true })
+  @IsOptional()
+  @MinLength(10)
+  about: string;
+
   @Column("varchar", { length: 50, nullable: true })
   @IsOptional()
   @IsUrl()
-  webSite: string;
+  website: string;
 
   @Column("varchar", { length: 50, nullable: true })
   @IsOptional()
@@ -141,11 +159,12 @@ export class Vendor {
   @OneToOne(() => User, (user) => user.vendor)
   user: User;
 
-  @Column({ nullable: true })
-  @IsOptional()
-  userId: string;
+  // @Column({ nullable: true })
+  // @IsOptional()
+  // userId: string;
 
-  @ManyToMany(() => District, (district) => district.vendor)
+  @ManyToMany(() => District, (district) => district.vendor, { cascade: true })
+  @JoinTable()
   servedDistrict: District[];
 
   @OneToOne(() => Portfolio, (prices) => prices.vendor)
@@ -164,10 +183,9 @@ export class District {
   id: string;
 
   @Column()
-  district: string;
+  districtName: string;
 
   @ManyToMany(() => Vendor, (vendor) => vendor.servedDistrict)
-  @JoinTable()
   vendor: Vendor[];
 }
 

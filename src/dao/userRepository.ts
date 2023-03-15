@@ -18,7 +18,7 @@ interface UserRepositoryInterface {
   addUser(data: User): Promise<User | null>;
   // updateImage(userId: string) : Promise<
   // addVendor(id: string, vendorData: User): Promise<User | null>;
-  updateUser(id: string, data: User): Promise<UpdateResult>;
+  // updateUser(id: string, data: User): Promise<UpdateResult>;
 }
 
 class UserRepository implements UserRepositoryInterface {
@@ -30,7 +30,7 @@ class UserRepository implements UserRepositoryInterface {
   }
 
   async findUserById(id: string) {
-    const test = await userRepository.findOne({where : {id: id }, relations: {vendor: true}});
+    const test = await userRepository.findOne({where : {id: id }, relations: {vendor: {servedDistrict: true}, client: true}});
     console.log("!!!!!!!!!!!!!!!!", test)
     return test;
   }
@@ -58,7 +58,9 @@ class UserRepository implements UserRepositoryInterface {
   }
 
   async updateUser(id: string, data: User) {
-    return await userRepository.update(id, data);
+    await validateObjToEntity<HydratedUser>(data, User);
+    // .update does not work - https://github.com/typeorm/typeorm/issues/2821
+    return await userRepository.save(data);
   }
 
   async addVendor(id: string, vendorData: Vendor) {

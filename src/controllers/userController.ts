@@ -15,6 +15,7 @@ import { HydratedUser, UserUnion } from "../types/types";
 import fileUpload from "express-fileupload";
 import mime from "mime";
 import { IMAGE_PATH } from "../utils/staticData";
+import { User } from "../entity/Entities";
 
 export const getUser = catchAsync(async (req: Request, res: Response) => {
   const user = await userDBHandler.findUserById(req.params.id);
@@ -69,18 +70,17 @@ export const signup = catchAsync(
     const data: UserUnion = req.body;
     // Split user and client/vendor data.
 
-    const HydratedUser: HydratedUser = hydrateUserData(data);
-    console.log(HydratedUser);
+    const hydratedUser: HydratedUser = hydrateUserData(data);
     const userFoundInDb = await userDBHandler.findUserByEmail(
-      HydratedUser.email
+      hydratedUser.email
     );
     if (userFoundInDb) {
       return next(new AppError("User with such email already exists", 401));
     }
     // Hash the password with cost of 12
-    HydratedUser.password = await bcrypt.hash(HydratedUser.password, 12);
+    hydratedUser.password = await bcrypt.hash(hydratedUser.password, 12);
 
-    const newUser = await userDBHandler.addUser(HydratedUser);
+    const newUser = await userDBHandler.addUser(hydratedUser);
     if (newUser) {
       createSendToken(newUser, 201, res);
     } else {
@@ -91,7 +91,10 @@ export const signup = catchAsync(
 
 // TODO: Validate that update is coming either from admin or from the user itself by confirming token is for the same user as the updates
 export const updateUser = catchAsync(async (req: Request, res: Response) => {
-  const updatedUser = await userDBHandler.updateUser(req.params.id, req.body);
+  const hydratedUser = hydrateUserData(req.body)
+  console.log(hydrateUserData);
+  // if (req.user) hydratedUser.password = req.user?.password;
+  const updatedUser = await userDBHandler.updateUser(req.params.id, hydratedUser as User);
 
   res.status(201).json({
     status: "success",

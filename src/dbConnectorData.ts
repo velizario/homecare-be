@@ -8,8 +8,9 @@ export const AppDataSource = new DataSource({
     password: "test",
     database: "test",
     synchronize: true,
-    logging: false,
+    logging: true,
     entities: [User, Client, Vendor, District, Schedule, WeekdayAvailability, Service, Portfolio, Event],
     migrations: [],
     subscribers: [],
+    logger: 'file',
   });
