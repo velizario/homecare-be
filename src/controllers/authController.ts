@@ -86,7 +86,7 @@ export const protect = catchAsync(async (req: Request, res: Response, next: Next
   // 4) check if user changed password after JWT was issued NOTE: not implemented.
 
   // NOTE: How to keep info on the logged in user? response might be best. Right now I'm also adding to the req.user - see if that is security breach, as user can add it too
-  res.user = freshUser;
+  res.user = flattenUserData(freshUser);
 
   next();
 });

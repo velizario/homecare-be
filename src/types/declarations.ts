@@ -21,7 +21,7 @@ declare global {
         }
         interface Response {
         // should not be limited to User
-        user?: FlattenedUser | User;
+        user?: FlattenedUser;
         }
     }
   }

@@ -17,9 +17,10 @@ export const getUser = catchAsync(async (req: Request, res: Response, next: Next
   // res.user = flattenUserData(user);
   // next();
 
+
   res.status(200).json({
     status: "success",
-    data: res.user,
+    data:  res.user,
   });
 });
 
@@ -47,7 +48,7 @@ export const imageUpload = (req: Request, res: Response, next: NextFunction) => 
     if (err) {
       return next(new AppError(err, 500));
     }
-    userDBHandler.updateUserImage(req.user!.id, image.name);
+    userDBHandler.updateUserImage(res.user!.id, image.name);
     res.status(200).json({ status: "success" });
   });
 };
@@ -79,9 +80,7 @@ export const updateUser = catchAsync(async (req: Request, res: Response) => {
 
   res.status(201).json({
     status: "success",
-    data: {
-      user: updatedUser,
-    },
+    data: flattenUserData(updatedUser),
   });
 });
 
