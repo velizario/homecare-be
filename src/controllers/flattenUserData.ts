@@ -1,19 +1,25 @@
-import { Request, Response, NextFunction } from "express";
-import { Client, Role,  User,  Vendor } from "../entity/Entities";
-import { HydratedUser, UserUnion } from "../types/types";
-import catchAsync from "../utils/errorHandler";
+import { stringify } from "querystring";
+import { User } from "../entity/Entities";
+import { FlattenedUser } from "../types/types";
+import mapValues from 'lodash/mapValues'
 
+export const flattenUserData = (data: User) => {
+  // Flatten by taking out 'vendor' and 'client'.
+  // Strip off password (anything else?) as sensitive data to prepare for the frontend
+  const { vendor, client, password, ...rest } = data;
 
-export const flattenUserData = catchAsync(
-  async (req: Request, res: Response, next: NextFunction) => {
-    
-    // Flatten by taking out 'vendor' and 'client'. Strip off sensitive data to prepare for the frontend
-    const { vendor, client, password, ...rest } = req.body as User;
-    const userDataFlat = Object.assign({}, rest, vendor, client);
-    console.log(userDataFlat)
-    res.status(200).json({
-        status: "success",
-        data: userDataFlat,
-    });
-  }
-);
+  const userDataFlat: FlattenedUser = Object.assign({}, vendor, client, rest);
+
+  // let userData = {} as Record<string, any>
+
+  // for (const [key, value] of Object.entries(userDataFlat)) {
+  //   value === null ? (userData[key] = "") : (userData[key] = value);
+  // }
+
+  // replace null values with ""
+  const userDataParsed = mapValues(userDataFlat, value => value === null ? "" : value)
+
+  // Object.keys(userDataFlat).forEach(key => userDataFlat[key as keyof FlattenedUser]==='null' && (userDataFlat[key as keyof FlattenedUser] = ""))
+
+  return userDataParsed as FlattenedUser
+};

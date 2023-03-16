@@ -83,7 +83,7 @@ export class User {
   @CreateDateColumn()
   createdAt: Date;
 
-  @OneToOne(() => Client, (client) => client.user, { cascade: true })
+  @OneToOne(() => Client, (client) => client.user, { cascade: true, eager: true })
   @JoinColumn()
   client: Relation<Client>;
 
@@ -91,7 +91,7 @@ export class User {
   @IsOptional()
   clientId: string;
 
-  @OneToOne(() => Vendor, (vendor) => vendor.user, { cascade: true })
+  @OneToOne(() => Vendor, (vendor) => vendor.user, { cascade: true, eager: true })
   @JoinColumn()
   vendor: Relation<Vendor>;
 
@@ -136,6 +136,10 @@ export class Vendor {
   @Column("varchar", { length: 50 })
   companyName: string;
 
+  @Column({ nullable: true })
+  @IsOptional()
+  city: string;
+
   @Column("varchar", { nullable: true })
   @IsOptional()
   @MinLength(10)
@@ -163,7 +167,7 @@ export class Vendor {
   // @IsOptional()
   // userId: string;
 
-  @ManyToMany(() => District, (district) => district.vendor, { cascade: true })
+  @ManyToMany(() => District, (district) => district.vendor, { cascade: true, eager: true })
   @JoinTable()
   servedDistrict: District[];
 

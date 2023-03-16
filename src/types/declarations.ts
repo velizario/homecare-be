@@ -1,4 +1,5 @@
 import { User } from "../entity/Entities";
+import { FlattenedUser } from "./types";
 
 declare global {
     namespace NodeJS {
@@ -16,11 +17,11 @@ declare global {
     namespace Express {
         interface Request {
         // should not be limited to User
-        user?: User;
+        user?: FlattenedUser;
         }
         interface Response {
         // should not be limited to User
-        user?: User;
+        user?: FlattenedUser | User;
         }
     }
   }

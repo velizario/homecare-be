@@ -1,3 +1,4 @@
+import { mapValues } from "lodash";
 import { Client, Role, User, Vendor } from "../entity/Entities";
 import { HydratedUser, UserUnion } from "../types/types";
 
@@ -35,5 +36,8 @@ export default function hydrateUserData(data: UserUnion) {
     userHydrated.vendor = { id: userHydrated.vendorId, ...vendorData };
     servedDistrict && (userHydrated.vendor.servedDistrict = servedDistrict);
   }
-  return userHydrated;
+
+  // replace "" values with null
+  const userDataParsed = mapValues(userHydrated, value => value === "" ? null : value)
+  return userDataParsed as HydratedUser;
 }

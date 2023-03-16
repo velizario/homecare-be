@@ -1,5 +1,5 @@
 import * as express from "express";
-import { login, protect } from "../controllers/authController";
+import { login, protect, sendToken } from "../controllers/authController";
 import {
   getUser,
   updateUser,
@@ -17,13 +17,13 @@ const router = express.Router();
 // router.route("/featured").get(featured, getAllUsers);
 
 // Signup route
-router.use("/userSignup", signup);
+router.use("/userSignup", signup, sendToken);
 
 // login route
-router.post("/userLogin", login);
+router.post("/userLogin", login, sendToken);
 
 // get user data route
-router.get("/userGet", protect, getLoggedInUser);
+router.get("/userGet", protect, getUser);
 
 // get and patch user
 router.route("/:id").get(getUser).patch(updateUser);
