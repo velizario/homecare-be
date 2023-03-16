@@ -11,14 +11,12 @@ import mime from "mime";
 import { IMAGE_PATH } from "../utils/staticData";
 import { User } from "../entity/Entities";
 
-export const getUser = catchAsync(async (req: Request, res: Response) => {
+export const getUser = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
   const user = await userDBHandler.findUserById(req.params.id);
-  res.status(201).json({
-    status: "success",
-    data: {
-      user,
-    },
-  });
+  if (!user) return next(new AppError("User does not exist", 404));
+  req.body = user
+  next()
+
 });
 
 export const getLoggedInUser = catchAsync(
@@ -37,10 +35,7 @@ export const imageUpload = (
   next: NextFunction
 ) => {
   // Log the files to the console
-  if (!req.files) {
-    console.log("no file!");
-    return res.sendStatus(400);
-  }
+  if (!req.files) return next(new AppError("no file!", 400));
 
   const image = req.files.file as fileUpload.UploadedFile;
 
@@ -86,7 +81,6 @@ export const signup = catchAsync(
 // TODO: Validate that update is coming either from admin or from the user itself by confirming token is for the same user as the updates
 export const updateUser = catchAsync(async (req: Request, res: Response) => {
   const hydratedUser = hydrateUserData(req.body)
-  console.log(hydrateUserData);
   // if (req.user) hydratedUser.password = req.user?.password;
   const updatedUser = await userDBHandler.updateUser(req.params.id, hydratedUser as User);
 
@@ -100,7 +94,6 @@ export const updateUser = catchAsync(async (req: Request, res: Response) => {
 
 // Do I need to add vendor?
 // export const addVendor = catchAsync(async (req: Request, res: Response) => {
-//   console.log("!!!!!!!!!!!!!!!!adding vendor")
 //     const userWithVendor = await userDBHandler.addVendor(req.params.id, req.body);
 //     res.status(201).json({
 //       status: "success",

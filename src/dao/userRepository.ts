@@ -30,7 +30,6 @@ class UserRepository implements UserRepositoryInterface {
 
   async findUserById(id: string) {
     const test = await userRepository.findOne({where : {id: id }, relations: {vendor: {servedDistrict: true}, client: true}});
-    console.log("!!!!!!!!!!!!!!!!", test)
     return test;
   }
 

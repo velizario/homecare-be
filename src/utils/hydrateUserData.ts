@@ -3,7 +3,6 @@ import { HydratedUser, UserUnion } from "../types/types";
 
 export default function hydrateUserData(data: UserUnion) {
   // also remove passwordConfirm from the initial request
-  console.log("start hydrating");
   const {
     website,
     instagram,
@@ -34,7 +33,6 @@ export default function hydrateUserData(data: UserUnion) {
     userHydrated.roles.includes(Role.VENDOR_COMPANY)
   ) {
     userHydrated.vendor = { id: userHydrated.vendorId, ...vendorData };
-    console.log(servedDistrict)
     servedDistrict && (userHydrated.vendor.servedDistrict = servedDistrict);
   }
   return userHydrated;
