@@ -4,7 +4,7 @@ import AppError from "../utils/appError";
 import userDBHandler from "../dao/UserRepository";
 import bcrypt from "bcryptjs";
 import hydrateUserData from "../utils/hydrateUserData";
-import { HydratedUser, UserUnion } from "../types/types";
+import { FlattenedUser, HydratedUser, UserUnion } from "../types/types";
 import fileUpload from "express-fileupload";
 import mime from "mime";
 import { IMAGE_PATH } from "../utils/staticData";
@@ -84,6 +84,24 @@ export const updateUser = catchAsync(async (req: Request, res: Response, next: N
     data: flattenUserData(updatedUser),
   });
 });
+
+export const passwordChange = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+  const changeAttributes = req.body as { email: string; password: string };
+  const user = res.user 
+
+  if(!user) return next(new AppError("User is not attached to response!", 500))
+
+  user.email = changeAttributes.email;
+  const hydratedUser = hydrateUserData(user);
+
+
+  const updatedUser = await userDBHandler.updateUser(req.params.id, hydratedUser as User);
+  res.status(201).json({
+    status: "success",
+    data: flattenUserData(updatedUser),
+  });
+
+})
 
 // Do I need to add vendor?
 // export const addVendor = catchAsync(async (req: Request, res: Response) => {
