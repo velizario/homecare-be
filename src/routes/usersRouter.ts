@@ -26,7 +26,7 @@ router.post("/userLogin", login, sendToken);
 router.get("/userGet", protect, getUser);
 
 // get and patch user
-router.route("/:id").get(getUser).patch(updateUser);
+router.route("/:id").get(protect, getUser).patch(protect, updateUser);
 
 // Fileupload
 router.use(

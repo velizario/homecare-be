@@ -17,10 +17,9 @@ export const getUser = catchAsync(async (req: Request, res: Response, next: Next
   // res.user = flattenUserData(user);
   // next();
 
-
   res.status(200).json({
     status: "success",
-    data:  res.user,
+    data: res.user,
   });
 });
 
@@ -33,9 +32,11 @@ export const getLoggedInUser = catchAsync(async (req: Request, res: Response, ne
   next();
 });
 
-export const imageUpload = (req: Request, res: Response, next: NextFunction) => {
+export const imageUpload = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
   // Log the files to the console
+  console.log("uploading image");
   if (!req.files) return next(new AppError("no file!", 400));
+  if (!res.user) return next(new AppError("User is not attached to response!", 500));
 
   const image = req.files.file as fileUpload.UploadedFile;
 
@@ -44,14 +45,15 @@ export const imageUpload = (req: Request, res: Response, next: NextFunction) => 
   // If does not have image mime type prevent from uploading
   // if (/^image/.test(image.mimetype)) return res.sendStatus(400);
 
-  image.mv(IMAGE_PATH + "/" + image.name, (err) => {
+  image.mv(IMAGE_PATH + "/" + image.name, async (err) => {
     if (err) {
       return next(new AppError(err, 500));
     }
-    userDBHandler.updateUserImage(res.user!.id, image.name);
-    res.status(200).json({ status: "success" });
+    const userWithImageUpdated = await userDBHandler.updateUserImage(res.user!.id, image.name);
+    if (!userWithImageUpdated) return next(new AppError("Could not upload image!", 500))
+    res.status(200).json({ status: "success", data: userWithImageUpdated });
   });
-};
+});
 
 export const signup = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
   const data: UserUnion = req.body;
@@ -72,12 +74,11 @@ export const signup = catchAsync(async (req: Request, res: Response, next: NextF
 });
 
 // TODO: Validate that update is coming either from admin or from the user itself by confirming token is for the same user as the updates
-export const updateUser = catchAsync(async (req: Request, res: Response) => {
+export const updateUser = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
   const hydratedUser = hydrateUserData(req.body);
-  console.log(hydratedUser)
+  console.log(hydratedUser);
   // if (req.user) hydratedUser.password = req.user?.password;
   const updatedUser = await userDBHandler.updateUser(req.params.id, hydratedUser as User);
-
   res.status(201).json({
     status: "success",
     data: flattenUserData(updatedUser),

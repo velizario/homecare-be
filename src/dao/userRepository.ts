@@ -25,7 +25,7 @@ class UserRepository implements UserRepositoryInterface {
     const user = await this.findUserById(userId);
     if (!user) throw new AppError("No such user in Database", 404)
     user.imageUrl = imageUrl;
-    return await this.updateUser(userId, user);
+    return await userRepository.save(user);
   }
 
   async findUserById(id: string) {
