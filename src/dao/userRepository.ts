@@ -23,13 +23,16 @@ interface UserRepositoryInterface {
 class UserRepository implements UserRepositoryInterface {
   async updateUserImage(userId: string, imageUrl: string) {
     const user = await this.findUserById(userId);
-    if (!user) throw new AppError("No such user in Database", 404)
+    if (!user) throw new AppError("No such user in Database", 404);
     user.imageUrl = imageUrl;
     return await userRepository.save(user);
   }
 
   async findUserById(id: string) {
-    const test = await userRepository.findOne({where : {id: id }, relations: {vendor: {servedDistrict: true}, client: true}});
+    const test = await userRepository.findOne({
+      where: { id: id },
+      relations: { vendor: { servedDistrict: true }, client: true },
+    });
     return test;
   }
 
@@ -44,7 +47,6 @@ class UserRepository implements UserRepositoryInterface {
   async findAllClients(): Promise<Client[] | null> {
     return await clientRepository.find();
   }
-
 
   async addUser(data: HydratedUser): Promise<User | null> {
     // assign data object to an instance of User and validate the data

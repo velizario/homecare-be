@@ -4,12 +4,13 @@ import AppError from "../utils/appError";
 import userDBHandler from "../dao/UserRepository";
 import bcrypt from "bcryptjs";
 import hydrateUserData from "../utils/hydrateUserData";
-import { FlattenedUser, HydratedUser, UserUnion } from "../types/types";
+import { FlattenedUser, HydratedUser } from "../types/types";
 import fileUpload from "express-fileupload";
 import mime from "mime";
 import { IMAGE_PATH } from "../utils/staticData";
 import { User } from "../entity/Entities";
 import { flattenUserData } from "./flattenUserData";
+import validateObjToEntity from "../utils/validateObjToEntity";
 
 export const getUser = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
   // const user = await userDBHandler.findUserById(req.params.id);
@@ -34,7 +35,6 @@ export const getLoggedInUser = catchAsync(async (req: Request, res: Response, ne
 
 export const imageUpload = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
   // Log the files to the console
-  console.log("uploading image");
   if (!req.files) return next(new AppError("no file!", 400));
   if (!res.user) return next(new AppError("User is not attached to response!", 500));
 
@@ -50,23 +50,25 @@ export const imageUpload = catchAsync(async (req: Request, res: Response, next: 
       return next(new AppError(err, 500));
     }
     const userWithImageUpdated = await userDBHandler.updateUserImage(res.user!.id, image.name);
-    if (!userWithImageUpdated) return next(new AppError("Could not upload image!", 500))
+    if (!userWithImageUpdated) return next(new AppError("Could not upload image!", 500));
     res.status(200).json({ status: "success", data: userWithImageUpdated });
   });
 });
 
 export const signup = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
-  const data: UserUnion = req.body;
+  const data: FlattenedUser = req.body;
   // Split user and client/vendor data.
 
   const hydratedUser: HydratedUser = hydrateUserData(data);
+  if (!hydratedUser.password) return next(new AppError("Application error. Password is not attached.", 500));
+
   const userFoundInDb = await userDBHandler.findUserByEmail(hydratedUser.email);
   if (userFoundInDb) {
     return next(new AppError("User with such email already exists", 401));
   }
   // Hash the password with cost of 12
   hydratedUser.password = await bcrypt.hash(hydratedUser.password, 12);
-
+  
   const newUser = await userDBHandler.addUser(hydratedUser);
   if (!newUser) return next(new AppError("Could not create the user!", 400));
   res.user = flattenUserData(newUser);
@@ -75,33 +77,43 @@ export const signup = catchAsync(async (req: Request, res: Response, next: NextF
 
 // TODO: Validate that update is coming either from admin or from the user itself by confirming token is for the same user as the updates
 export const updateUser = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
-  const hydratedUser = hydrateUserData(req.body);
-  console.log(hydratedUser);
+  const hydratedUser = hydrateUserData(req.body as FlattenedUser);
+  
   // if (req.user) hydratedUser.password = req.user?.password;
   const updatedUser = await userDBHandler.updateUser(req.params.id, hydratedUser as User);
+  if (!updatedUser) return next(new AppError("Could not update the user!", 400));
+
   res.status(201).json({
     status: "success",
     data: flattenUserData(updatedUser),
   });
 });
 
-export const passwordChange = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+export const changePassword = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
   const changeAttributes = req.body as { email: string; password: string };
-  const user = res.user 
-
-  if(!user) return next(new AppError("User is not attached to response!", 500))
-
+  const user = res.user;
+  if (!user) return next(new AppError("User is not attached to response!", 500));
+  
   user.email = changeAttributes.email;
+  // Hash the password with cost of 12
+  user.password = await bcrypt.hash(changeAttributes.password, 12);
   const hydratedUser = hydrateUserData(user);
 
+  validateObjToEntity(hydratedUser, User)
+ 
+  const userFoundInDb = await userDBHandler.findUserByEmail(hydratedUser.email);
+  if (userFoundInDb && userFoundInDb.id != hydratedUser.id) {
+    return next(new AppError("User with such email already exists", 401));
+  }
+  
+  const updatedUser = await userDBHandler.updateUser(user.id, hydratedUser as User);
+  if (!updatedUser) return next(new AppError("Could not update the user!", 400));
 
-  const updatedUser = await userDBHandler.updateUser(req.params.id, hydratedUser as User);
   res.status(201).json({
     status: "success",
     data: flattenUserData(updatedUser),
   });
-
-})
+});
 
 // Do I need to add vendor?
 // export const addVendor = catchAsync(async (req: Request, res: Response) => {

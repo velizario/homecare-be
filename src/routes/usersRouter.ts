@@ -6,6 +6,7 @@ import {
   signup,
   imageUpload,
   getLoggedInUser,
+  changePassword,
   // addVendor,
 } from "../controllers/userController";
 import fileUpload from "express-fileupload";
@@ -25,10 +26,11 @@ router.post("/userLogin", login, sendToken);
 // get user data route
 router.get("/userGet", protect, getUser);
 
+router.patch("/passwordChange", protect, changePassword)
+
 // get and patch user
 router.route("/:id").get(protect, getUser).patch(protect, updateUser);
 
-router.patch("/passwordChange", protect, passwordChange)
 
 // Fileupload
 router.use(

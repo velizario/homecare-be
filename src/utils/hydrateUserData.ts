@@ -1,8 +1,8 @@
 import { mapValues } from "lodash";
 import { Client, Role, User, Vendor } from "../entity/Entities";
-import { HydratedUser, UserUnion } from "../types/types";
+import { FlattenedUser, HydratedUser } from "../types/types";
 
-export default function hydrateUserData(data: UserUnion) {
+export default function hydrateUserData(data: FlattenedUser) {
   // also remove passwordConfirm from the initial request
   const {
     website,
@@ -17,7 +17,7 @@ export default function hydrateUserData(data: UserUnion) {
     servedDistrict,
     ...rest
   } = data;
-  const userHydrated: HydratedUser = Object.assign({}, rest);
+  const hydratedUser: HydratedUser = Object.assign({}, rest);
   const vendorData: Partial<Vendor> = {
     companyName,
     about,
@@ -27,17 +27,18 @@ export default function hydrateUserData(data: UserUnion) {
   };
   // NOTE: No specific client data at this point.
   const clientData: Partial<Client> = { address, city, district };
-  if (userHydrated.roles.includes(Role.CLIENT))
-    userHydrated.client = { id: userHydrated.clientId, ...clientData };
+  if (hydratedUser.roles.includes(Role.CLIENT))
+    hydratedUser.client = { id: hydratedUser.clientId, ...clientData };
   if (
-    userHydrated.roles.includes(Role.VENDOR_INDIVIDUAL) ||
-    userHydrated.roles.includes(Role.VENDOR_COMPANY)
+    hydratedUser.roles.includes(Role.VENDOR_INDIVIDUAL) ||
+    hydratedUser.roles.includes(Role.VENDOR_COMPANY)
   ) {
-    userHydrated.vendor = { id: userHydrated.vendorId, ...vendorData };
-    servedDistrict && (userHydrated.vendor.servedDistrict = servedDistrict);
+    hydratedUser.vendor = { id: hydratedUser.vendorId, ...vendorData };
+    servedDistrict && (hydratedUser.vendor.servedDistrict = servedDistrict);
   }
 
   // replace "" values with null
-  const userDataParsed = mapValues(userHydrated, value => value === "" ? null : value)
+
+  const userDataParsed = mapValues(hydratedUser, value => value === "" ? null : value)
   return userDataParsed as HydratedUser;
 }
