@@ -17,7 +17,6 @@ export const getUser = catchAsync(async (req: Request, res: Response, next: Next
   // if (!user) return next(new AppError("User does not exist", 404));
   // res.user = flattenUserData(user);
   // next();
-
   res.status(200).json({
     status: "success",
     data: res.user,
@@ -77,10 +76,11 @@ export const signup = catchAsync(async (req: Request, res: Response, next: NextF
 
 // TODO: Validate that update is coming either from admin or from the user itself by confirming token is for the same user as the updates
 export const updateUser = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
-  const hydratedUser = hydrateUserData(req.body as FlattenedUser);
+  if (!res.user) return next(new AppError("User not attached", 500))
   
-  // if (req.user) hydratedUser.password = req.user?.password;
-  const updatedUser = await userDBHandler.updateUser(req.params.id, hydratedUser as User);
+  const userToUpdate = Object.assign(res.user, req.body) 
+  const hydratedUser = hydrateUserData(userToUpdate as FlattenedUser);
+  const updatedUser = await userDBHandler.updateUser(res.user.id, hydratedUser as User);
   if (!updatedUser) return next(new AppError("Could not update the user!", 400));
 
   res.status(201).json({

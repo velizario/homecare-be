@@ -38,7 +38,7 @@ export default function hydrateUserData(data: FlattenedUser) {
   }
 
   // replace "" values with null
-
+console.log(hydratedUser)
   const userDataParsed = mapValues(hydratedUser, value => value === "" ? null : value)
   return userDataParsed as HydratedUser;
 }

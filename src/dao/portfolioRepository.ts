@@ -1,6 +1,5 @@
 import { AppDataSource } from "../DBConnectorData";
-import { Portfolio, Service } from "../entity/Entities";
-import  { vendorRepository } from "./UserRepository";
+import { Portfolio } from "../entity/Entities";
 
 export const portfolioRepository = AppDataSource.getRepository(Portfolio);
 

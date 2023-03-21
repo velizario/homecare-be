@@ -60,14 +60,13 @@ export const login = catchAsync(async (req: Request, res: Response, next: NextFu
 // Validates token and allows further routing
 export const protect = catchAsync(async (req: Request, res: Response, next: NextFunction, email?: string) => {
   console.log("protect");
-
   // 1) Get token and
   // Token is sent by the user in the header in format { Authorization : Bearer token }
   let token;
   if (req.headers.authorization && req.headers.authorization.startsWith("Bearer")) {
     token = req.headers.authorization.split(" ")[1]; //gets the second part of the string (after Bearer)
   }
-
+  
   if (!token) {
     return next(new AppError("You are not logged in", 401));
   }
@@ -76,15 +75,15 @@ export const protect = catchAsync(async (req: Request, res: Response, next: Next
   // const decoded = await promisify(jwt.verify)(token, process.env.JWT_SECRET);
   //NOTE: synchronously - blocks the thread.
   const decoded = jwt.verify(token, process.env.JWT_SECRET) as JwtPayload;
-
+  
   // 3) Check if user still exists (might have been deleted)
   const freshUser = await userDBHandler.findUserById(decoded.id.toString());
   if (!freshUser) {
     return next(new AppError("The user does not longer exist", 401));
   }
-
+  
   // 4) check if user changed password after JWT was issued NOTE: not implemented.
-
+  
   // NOTE: How to keep info on the logged in user? response might be best. Right now I'm also adding to the req.user - see if that is security breach, as user can add it too
   res.user = flattenUserData(freshUser);
   next();

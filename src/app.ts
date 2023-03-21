@@ -2,7 +2,7 @@ import express from "express";
 import { Request, Response, NextFunction } from "express";
 import helmet from "helmet";
 import morgan from "morgan";
-import bookingsRouter from "./routes/bookingsRouter";
+import ordersRouter from "./routes/ordersRouter";
 import usersRouter from "./routes/usersRouter";
 import vendorsRouter from "./routes/vendorsRouter";
 import AppError from "./utils/appError";
@@ -50,8 +50,11 @@ app.use("/api/v1/users", usersRouter);
 // Vendors Router
 app.use("/api/v1/vendors", vendorsRouter);
 
+// Vendors Router
+app.use("/api/v1/orders", ordersRouter);
+
 // Bookings Router
-app.use("/api/v1/bookings", bookingsRouter);
+// app.use("/api/v1/bookings", bookingsRouter);
 
 // Default router
 app.all("*", (req: Request, res: Response, next: NextFunction) => {

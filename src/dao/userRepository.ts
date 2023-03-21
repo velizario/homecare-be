@@ -1,4 +1,3 @@
-import { UpdateResult } from "typeorm";
 import { AppDataSource } from "../DBConnectorData";
 import { Client, User, Vendor } from "../entity/Entities";
 import { HydratedUser } from "../types/types";

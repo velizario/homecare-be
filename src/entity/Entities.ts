@@ -1,11 +1,4 @@
-import {
-  IsUrl,
-  Length,
-  IsEmail,
-  IsOptional,
-  IsPhoneNumber,
-  MinLength,
-} from "class-validator";
+import { IsUrl, Length, IsEmail, IsOptional, IsPhoneNumber, MinLength } from "class-validator";
 import {
   Entity,
   PrimaryGeneratedColumn,
@@ -44,6 +37,13 @@ export enum DayOfWeek {
   SUNDAY,
 }
 
+export enum OrderStatus {
+  NEW = 1,
+  ACTIVE,
+  COMPLETE,
+  CANCELLED
+}
+
 @Entity()
 export class User {
   @PrimaryGeneratedColumn()
@@ -58,13 +58,12 @@ export class User {
   lastName: string;
 
   @Column("varchar", { length: 20, nullable: true })
-  @IsOptional()
   @IsPhoneNumber("BG")
+  @IsOptional()
   phone: string;
 
   @Column("varchar", { length: 100, nullable: true })
   @IsOptional()
-  @IsUrl()
   imageUrl: string;
 
   @Column("varchar", { length: 50 })
@@ -125,7 +124,10 @@ export class Client {
   // userId: string;
 
   @OneToMany(() => Event, (event) => event.client)
-  events: Event[];
+  events: Relation<Event[]>;
+
+  @OneToMany(() => Order, (order) => order.client)
+  orders: Relation<Order[]>;
 }
 
 @Entity()
@@ -179,6 +181,9 @@ export class Vendor {
 
   @OneToMany(() => Event, (event) => event.client)
   events: Event[];
+
+  @OneToMany(() => Order, (order) => order.client)
+  orders: Relation<Order[]>;
 }
 
 @Entity()
@@ -208,10 +213,7 @@ export class Schedule {
   @JoinColumn()
   vendor: Vendor;
 
-  @OneToMany(
-    () => WeekdayAvailability,
-    (weekdayAvailability) => weekdayAvailability.schedule
-  )
+  @OneToMany(() => WeekdayAvailability, (weekdayAvailability) => weekdayAvailability.schedule)
   availability: Relation<WeekdayAvailability>;
 }
 
@@ -260,6 +262,48 @@ export class Portfolio {
   @OneToOne(() => Vendor, (vendor) => vendor.portfolio)
   @JoinColumn()
   vendor: Vendor;
+}
+
+@Entity()
+export class Order {
+  @PrimaryGeneratedColumn()
+  id: string;
+
+  @Column()
+  service: string;
+
+  @Column()
+  frequency: VisitFrequency;
+
+  @Column("integer", { array: true })
+  serviceDay: DayOfWeek[];
+
+  @Column("varchar", { array: true })
+  serviceHour: string[];
+
+  @Column("varchar", { array: true })
+  additionalService: string[];
+
+  @Column()
+  areaSize: string;
+
+  @Column({nullable: true})
+  status: OrderStatus
+
+  // @CreateDateColumn()
+  // createdAt: Date;
+
+  @ManyToOne(() => Client, (client) => client.orders)
+  client: Client;
+
+  @Column({ nullable: true })
+  clientId: number;
+
+  @ManyToOne(() => Vendor, (vendor) => vendor.orders)
+  vendor: Client;
+
+  @Column({ nullable: true })
+  vendorId: number;
 }
 
 @Entity()

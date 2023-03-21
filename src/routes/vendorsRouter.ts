@@ -1,12 +1,12 @@
 import express from "express";
 import { flattenUserData } from "../controllers/flattenUserData";
-import { getUser } from "../controllers/userController";
+import { getVendor } from "../controllers/vendorController";
 
 
 
 // Instantiate Router
 const router = express.Router();
 
-router.route("/:id").get(getUser, flattenUserData);
+router.route("/:id").get(getVendor);
 
 export default router;

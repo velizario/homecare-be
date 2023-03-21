@@ -29,7 +29,7 @@ router.get("/userGet", protect, getUser);
 router.patch("/passwordChange", protect, changePassword)
 
 // get and patch user
-router.route("/:id").get(protect, getUser).patch(protect, updateUser);
+router.route("/").get(protect, getUser).patch(protect, updateUser);
 
 
 // Fileupload
