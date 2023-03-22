@@ -16,7 +16,7 @@ class OrderRepository implements OrderRepositoryInterface {
   }
 
   async findOrderById(orderId: string) {
-    return await orderRepository.findOne({ where: { id: orderId }, relations: { vendor: true, client: true } });
+    return await orderRepository.findOne({ where: { id: orderId }, relations: { vendor: {user:true}, client: {user:true} } });
   }
 
   async findAllOrders(searchArg: Record<string, string>) {
