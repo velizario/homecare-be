@@ -13,7 +13,7 @@ AppDataSource.initialize()
   .then(async () => {
     console.log(`Connected to DB on host ${"localhost"}`);
     // Run seeds
-    SeedsImpl.updateServiceData()
+    SeedsImpl.updateAllSeeds()
     // Start the server
     app.listen(PORT, () => {
       console.log(`App running on PORT ${PORT}...`);

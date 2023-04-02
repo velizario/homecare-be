@@ -45,16 +45,6 @@ export enum OrderStatus {
   CANCELLED
 }
 
-// Seeds
-@Entity()
-export class ServiceData {
-  @PrimaryColumn()
-  id: string;
-   
-  @Column()
-  serviceName: string;
-}
-
 @Entity()
 export class User {
   @PrimaryGeneratedColumn()
@@ -347,3 +337,72 @@ export class Event {
 }
 
 
+// Seeds
+@Entity()
+export class SeedServiceType {
+  @PrimaryColumn()
+  id: string;
+   
+  @Column()
+  value: string;
+}
+
+@Entity()
+export class SeedVisitFrequency {
+  @PrimaryColumn()
+  id: string;
+   
+  @Column()
+  value: string;
+}
+
+@Entity()
+export class SeedVisitDay {
+  @PrimaryColumn()
+  id: string;
+   
+  @Column()
+  value: string;
+}
+
+@Entity()
+export class SeedOrderStatus {
+  @PrimaryColumn()
+  id: string;
+   
+  @Column()
+  value: string;
+}
+
+
+@Entity()
+export class SeedVisitHour {
+  @PrimaryColumn()
+  id: string;
+   
+  @Column()
+  value: string;
+
+  @Column()
+  daytime: string;
+}
+
+
+@Entity()
+export class SeedEstateSize {
+  @PrimaryColumn()
+  id: string;
+   
+  @Column()
+  value: string;
+}
+
+
+@Entity()
+export class SeedDistrictName {
+  @PrimaryColumn()
+  id: string;
+   
+  @Column()
+  value: string;
+}

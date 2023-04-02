@@ -1,11 +1,11 @@
 import { AppDataSource } from "../DBConnectorData";
-import { ServiceData } from "../entity/Entities";
+import { SeedServiceType } from "../entity/Entities";
 
-export const serviceDataRepository = AppDataSource.getRepository(ServiceData);
+export const SeedServiceTypeRepository = AppDataSource.getRepository(SeedServiceType);
 
 class EssentialsRepository {
   async findAllServices() {
-    return await serviceDataRepository.find();
+    return await SeedServiceTypeRepository.find();
   }
 }
 
