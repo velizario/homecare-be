@@ -1,6 +1,7 @@
 import { AppDataSource } from "../DBConnectorData";
 import { Order } from "../entity/Entities";
 import AppError from "../utils/appError";
+import validateObjToEntity from "../utils/validateObjToEntity";
 
 export const orderRepository = AppDataSource.getRepository(Order);
 
@@ -8,6 +9,7 @@ interface OrderRepositoryInterface {}
 
 class OrderRepository implements OrderRepositoryInterface {
   async addOrder(orderData: Order) {
+    await validateObjToEntity<Order>(orderData, Order);
     return await orderRepository.save(orderData);
   }
 

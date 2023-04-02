@@ -1,7 +1,7 @@
-import express from "express";
-import { Request, Response, NextFunction } from "express";
+import express, { NextFunction, Request, Response } from "express";
 import helmet from "helmet";
 import morgan from "morgan";
+import essentialsRouter from "./routes/essentialsRouter";
 import ordersRouter from "./routes/ordersRouter";
 import usersRouter from "./routes/usersRouter";
 import vendorsRouter from "./routes/vendorsRouter";
@@ -52,6 +52,9 @@ app.use("/api/v1/vendors", vendorsRouter);
 
 // Vendors Router
 app.use("/api/v1/orders", ordersRouter);
+
+// Essentials Router
+app.use("/api/v1/essentials", essentialsRouter);
 
 // Bookings Router
 // app.use("/api/v1/bookings", bookingsRouter);

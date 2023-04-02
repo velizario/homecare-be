@@ -11,10 +11,11 @@ import {
   ManyToOne,
   OneToMany,
   Relation,
+  PrimaryColumn,
 } from "typeorm";
 
 export enum Role {
-  ADMIN,
+  ADMIN = 0,
   CLIENT,
   VENDOR_COMPANY,
   VENDOR_INDIVIDUAL,
@@ -42,6 +43,16 @@ export enum OrderStatus {
   ACTIVE,
   COMPLETE,
   CANCELLED
+}
+
+// Seeds
+@Entity()
+export class ServiceData {
+  @PrimaryColumn()
+  id: string;
+   
+  @Column()
+  serviceName: string;
 }
 
 @Entity()
@@ -273,15 +284,17 @@ export class Order {
   service: string;
 
   @Column()
-  frequency: VisitFrequency;
-
-  @Column("integer", { array: true })
-  serviceDay: DayOfWeek[];
+  frequency: string;
+  // frequency: VisitFrequency;
 
   @Column("varchar", { array: true })
-  serviceHour: string[];
+  serviceDays: DayOfWeek[];
 
   @Column("varchar", { array: true })
+  serviceHours: string[];
+
+  @Column("varchar", { array: true, nullable: true })
+  @IsOptional()
   additionalService: string[];
 
   @Column()
@@ -289,6 +302,9 @@ export class Order {
 
   @Column({nullable: true})
   status: OrderStatus
+
+  @Column()
+  district: string;
 
   // @CreateDateColumn()
   // createdAt: Date;
@@ -329,3 +345,5 @@ export class Event {
   @ManyToOne(() => Service, (service) => service.event)
   service: Service;
 }
+
+

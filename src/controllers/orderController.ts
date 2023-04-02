@@ -9,20 +9,23 @@ const flattenOrder = (order: Order) => {
   console.log(order)
   return {
     ...ordersFlattened,
-    clientName: `${client.user.firstName} ${client.user.lastName}`,
-    vendorName: `${vendor.user.firstName} ${vendor.user.lastName}`,
-    vendorImgUrl: `${vendor.user.imageUrl}`,
-    clientImgUrl: `${client.user.imageUrl}`
+    clientName: client.user.firstName + " " + client.user.lastName,
+    vendorName: vendor.user.firstName + " " + vendor.user.lastName,
+    vendorImgUrl: vendor.user.imageUrl,
+    clientImgUrl: client.user.imageUrl
   };
 };
 
 export const createOrder = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
   const order = req.body as Order;
   // TODO add or calculate client and vendor id. One take from res.data but need to know if client or vendor
-  order.clientId = 2;
-  order.vendorId = 1;
+  const user = res.user;
+  if (!user) return next(new AppError("User is not attached to the response!", 500));
+
+  order.clientId = Number(user.clientId);
   order.status = OrderStatus.NEW;
 
+  console.log(order)
   const orderRes = await orderDBHandler.addOrder(order);
   res.status(200).json({ status: "success", data: orderRes });
 });

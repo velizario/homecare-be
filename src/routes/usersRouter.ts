@@ -23,6 +23,9 @@ router.use("/userSignup", signup, sendToken);
 // login route
 router.post("/userLogin", login, sendToken);
 
+// Authenticate route
+router.get("/userAuthenticate", protect, sendToken);
+
 // get user data route
 router.get("/userGet", protect, getUser);
 
