@@ -1,6 +1,5 @@
 import { AppDataSource } from "../DBConnectorData";
-import { Order } from "../entity/Entities";
-import AppError from "../utils/appError";
+import { Order, VisitDay, VisitHour } from "../entity/Entities";
 import validateObjToEntity from "../utils/validateObjToEntity";
 
 export const orderRepository = AppDataSource.getRepository(Order);
@@ -8,8 +7,14 @@ export const orderRepository = AppDataSource.getRepository(Order);
 interface OrderRepositoryInterface {}
 
 class OrderRepository implements OrderRepositoryInterface {
-  async addOrder(orderData: Order) {
-    await validateObjToEntity<Order>(orderData, Order);
+  async addOrder(orderData: any) {
+    const visitHour = orderData.visitHour.map((hour: string) => ({ id: hour }));
+    const visitDay = orderData.visitDay.map((day: string) => ({ id: day }));
+    orderData.visitHour = visitHour as VisitHour[];
+    orderData.visitDay = visitDay as VisitDay[];
+
+    // await validateObjToEntity<Order>(orderData, Order);
+    //  const test = (await EssentialsDBHandler.findAllVisitHours()).find(hour => hour.id === orderData.visitHour[0])
     return await orderRepository.save(orderData);
   }
 
@@ -18,11 +23,17 @@ class OrderRepository implements OrderRepositoryInterface {
   }
 
   async findOrderById(orderId: string) {
-    return await orderRepository.findOne({ where: { id: orderId }, relations: { vendor: {user:true}, client: {user:true} } });
+    return await orderRepository.findOne({
+      where: { id: orderId },
+      relations: { vendor: { user: true }, client: { user: true } },
+    });
   }
 
   async findAllOrders(searchArg: Record<string, string>) {
-    return await orderRepository.find({ where: searchArg, relations: { vendor: {user:true}, client: {user:true} } });
+    return await orderRepository.find({
+      where: searchArg,
+      relations: { vendor: { user: true }, client: { user: true } },
+    });
   }
 }
 

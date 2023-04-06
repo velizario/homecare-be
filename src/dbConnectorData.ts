@@ -1,5 +1,5 @@
 import { DataSource } from "typeorm";
-import { Client, District, Event, Portfolio, Service, Schedule, User, Vendor, WeekdayAvailability, Order, SeedServiceType, SeedVisitDay, SeedDistrictName, SeedEstateSize, SeedOrderStatus, SeedVisitFrequency, SeedVisitHour } from "./entity/Entities";
+import { Client, District, Portfolio, Service, Schedule, User, Vendor, WeekdayAvailability, Order, ServiceType, VisitDay, DistrictName, EstateSize, OrderStatus, VisitFrequency, VisitHour } from "./entity/Entities";
 export const AppDataSource = new DataSource({
     type: "postgres",
     host: "localhost",
@@ -9,7 +9,7 @@ export const AppDataSource = new DataSource({
     database: "test",
     synchronize: true,
     logging: true,
-    entities: [SeedServiceType, SeedVisitFrequency, SeedVisitDay, SeedOrderStatus, SeedVisitHour, SeedEstateSize, SeedDistrictName, User, Client, Vendor, District, Schedule, WeekdayAvailability, Service, Portfolio, Event, Order],
+    entities: [ServiceType, VisitFrequency, VisitDay, OrderStatus, VisitHour, EstateSize, DistrictName, User, Client, Vendor, District, Schedule, WeekdayAvailability, Service, Portfolio,  Order],
     migrations: [],
     subscribers: [],
     logger: 'file',

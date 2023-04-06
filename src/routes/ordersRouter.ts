@@ -4,9 +4,9 @@ import { cancelOrder, createOrder, getAllOrders, getOrder } from "../controllers
 
 const router = express.Router();
 
-router.post("/createOrder", protect, createOrder);
+router.post("/createOrder", createOrder);
 
-router.get("/getOrder/:id", protect, getOrder);
+router.get("/getOrder/:id", getOrder);
 
 router.get("/getAllOrders", protect, getAllOrders);
 

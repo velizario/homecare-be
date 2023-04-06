@@ -9,6 +9,7 @@ export const getVendor = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     const vendor = await userDBHandler.findUserById(req.params.id);
     if (!vendor) return next(new AppError("Vendor does not exist exists", 401));
+    console.log(vendor)
     // Proper response handling!!!
     res.status(201).json({
       status: "success",

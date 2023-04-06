@@ -21,13 +21,6 @@ export enum Role {
   VENDOR_INDIVIDUAL,
 }
 
-export enum VisitFrequency {
-  ONETIME,
-  WEEKLY,
-  BIWEEKLY,
-  QUADWEEKLY,
-}
-
 export enum DayOfWeek {
   MONDAY,
   TUESDAY,
@@ -36,13 +29,6 @@ export enum DayOfWeek {
   FRIDAY,
   SATURDAY,
   SUNDAY,
-}
-
-export enum OrderStatus {
-  NEW = 1,
-  ACTIVE,
-  COMPLETE,
-  CANCELLED
 }
 
 @Entity()
@@ -124,8 +110,8 @@ export class Client {
   // @IsOptional()
   // userId: string;
 
-  @OneToMany(() => Event, (event) => event.client)
-  events: Relation<Event[]>;
+  // @OneToMany(() => Event, (event) => event.client)
+  // events: Relation<Event[]>;
 
   @OneToMany(() => Order, (order) => order.client)
   orders: Relation<Order[]>;
@@ -180,8 +166,8 @@ export class Vendor {
   @OneToOne(() => Schedule, (schedule) => schedule.vendor)
   schedule: Relation<Schedule>;
 
-  @OneToMany(() => Event, (event) => event.client)
-  events: Event[];
+  // @OneToMany(() => Event, (event) => event.client)
+  // event: Event[];
 
   @OneToMany(() => Order, (order) => order.client)
   orders: Relation<Order[]>;
@@ -241,11 +227,11 @@ export class Service {
   @Column("varchar", { length: 30 })
   category: string;
 
-  @ManyToMany(() => Portfolio, (portfolio) => portfolio.services)
+  @ManyToMany(() => Portfolio, (portfolio) => portfolio.service)
   portfolio: Portfolio[];
 
-  @OneToMany(() => Event, (event) => event.service)
-  event: Relation<Event>;
+  // @OneToMany(() => Event, (event) => event.service)
+  // event: Relation<Event>;
 }
 
 @Entity()
@@ -258,7 +244,7 @@ export class Portfolio {
 
   @ManyToMany(() => Service, (service) => service.portfolio)
   @JoinTable()
-  services: Service[];
+  service: Service[];
 
   @OneToOne(() => Vendor, (vendor) => vendor.portfolio)
   @JoinColumn()
@@ -270,34 +256,36 @@ export class Order {
   @PrimaryGeneratedColumn()
   id: string;
 
-  @Column()
-  service: string;
+  @ManyToMany(() => ServiceType, (serviceType) => serviceType.order, { cascade: true, eager: true })
+  @JoinTable()
+  serviceType: Relation<ServiceType[]>;
 
-  @Column()
-  frequency: string;
-  // frequency: VisitFrequency;
+  @ManyToOne(() => VisitFrequency, (visitFrequency) => visitFrequency.order, { cascade: true, eager: true })
+  visitFrequency: Relation<VisitFrequency>;
 
-  @Column("varchar", { array: true })
-  serviceDays: DayOfWeek[];
+  @ManyToMany(() => VisitDay, (VisitDay) => VisitDay.order, { cascade: true, eager: true })
+  @JoinTable()
+  visitDay: Relation<VisitDay[]>;
 
-  @Column("varchar", { array: true })
-  serviceHours: string[];
+  @ManyToMany(() => VisitHour, (visitHour) => visitHour.order, { cascade: true, eager: true })
+  @JoinTable()
+  visitHour: Relation<VisitHour[]>;
 
   @Column("varchar", { array: true, nullable: true })
   @IsOptional()
   additionalService: string[];
 
+  @ManyToOne(() => EstateSize, (estateSize) => estateSize.order, { cascade: true, eager: true })
+  estateSize: Relation<EstateSize>;
+
+  @ManyToOne(() => OrderStatus, (orderStatus) => orderStatus.order, { cascade: true, eager: true })
+  orderStatus: Relation<OrderStatus>;
+
   @Column()
-  areaSize: string;
+  orderStatusId: number;
 
-  @Column({nullable: true})
-  status: OrderStatus
-
-  @Column()
-  district: string;
-
-  // @CreateDateColumn()
-  // createdAt: Date;
+  @ManyToOne(() => DistrictName, (districtName) => districtName.order, { cascade: true, eager: true })
+  districtName: Relation<DistrictName>;
 
   @ManyToOne(() => Client, (client) => client.orders)
   client: Client;
@@ -310,99 +298,119 @@ export class Order {
 
   @Column({ nullable: true })
   vendorId: number;
+
+  @CreateDateColumn()
+  createdAt: Date;
 }
 
-@Entity()
-export class Event {
-  @PrimaryGeneratedColumn()
-  id: string;
+// @Entity()
+// export class Event {
+//   @PrimaryGeneratedColumn()
+//   id: string;
 
-  @Column()
-  startDate: Date;
+//   @Column()
+//   startDate: Date;
 
-  @Column()
-  frequency: VisitFrequency;
+//   @Column()
+//   frequency: VisitFrequency;
 
-  @Column("date", { array: true })
-  skippedDays: Date[];
+//   @Column("date", { array: true })
+//   skippedDays: Date[];
 
-  @ManyToOne(() => Client, (client) => client.events)
-  client: Client;
+//   @ManyToOne(() => Client, (client) => client.events)
+//   client: Client;
 
-  @ManyToOne(() => Vendor, (vendor) => vendor.events)
-  vendor: Vendor;
+//   @ManyToOne(() => Vendor, (vendor) => vendor.event)
+//   vendor: Vendor;
 
-  @ManyToOne(() => Service, (service) => service.event)
-  service: Service;
-}
-
+//   @ManyToOne(() => Service, (service) => service.event)
+//   service: Service;
+// }
 
 // Seeds
 @Entity()
-export class SeedServiceType {
+export class ServiceType {
   @PrimaryColumn()
-  id: string;
-   
+  id: number;
+
   @Column()
   value: string;
+
+  @ManyToMany(() => Order, (order) => order.serviceType)
+  order: Order[];
 }
 
 @Entity()
-export class SeedVisitFrequency {
+export class VisitFrequency {
   @PrimaryColumn()
-  id: string;
-   
+  id: number;
+
   @Column()
   value: string;
+
+  @OneToMany(() => Order, (order) => order.visitFrequency)
+  order: Order[];
 }
 
 @Entity()
-export class SeedVisitDay {
+export class VisitDay {
   @PrimaryColumn()
-  id: string;
-   
+  id: number;
+
   @Column()
   value: string;
+
+  @ManyToMany(() => Order, (order) => order.visitFrequency)
+  order: Order[];
 }
 
 @Entity()
-export class SeedOrderStatus {
+export class OrderStatus {
   @PrimaryColumn()
-  id: string;
-   
+  id: number;
+
   @Column()
   value: string;
+
+  @OneToMany(() => Order, (order) => order.orderStatus)
+  order: Order[];
 }
 
-
 @Entity()
-export class SeedVisitHour {
+export class VisitHour {
   @PrimaryColumn()
-  id: string;
-   
+  id: number;
+
   @Column()
   value: string;
 
   @Column()
   daytime: string;
+
+  @ManyToMany(() => Order, (order) => order.visitHour)
+  order: Order[];
 }
 
-
 @Entity()
-export class SeedEstateSize {
+export class EstateSize {
   @PrimaryColumn()
-  id: string;
-   
+  id: number;
+
   @Column()
   value: string;
+
+  @OneToMany(() => Order, (order) => order.estateSize)
+  order: Order[];
 }
 
-
 @Entity()
-export class SeedDistrictName {
+export class DistrictName {
   @PrimaryColumn()
-  id: string;
-   
+  id: number;
+
   @Column()
   value: string;
+
+  @OneToMany(() => Order, (order) => order.districtName)
+  order: Order[];
 }

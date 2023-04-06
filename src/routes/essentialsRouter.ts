@@ -1,11 +1,14 @@
 import * as express from "express";
-import { getEssentialData } from "../controllers/essentialsController";
+import { getDistrictNames, getServiceTypes } from "../controllers/essentialsController";
 
 
 const router = express.Router();
 
 // Services route
-router.get("/getEssentialData", getEssentialData);
+router.get("/getServiceTypes", getServiceTypes);
+
+// Services route
+router.get("/getDistrictNames", getDistrictNames);
 
 
 export default router;

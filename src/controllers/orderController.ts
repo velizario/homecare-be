@@ -1,18 +1,20 @@
 import { NextFunction, Request, Response } from "express";
-import orderDBHandler, { orderRepository } from "../dao/orderRepository";
-import { Order, OrderStatus } from "../entity/Entities";
+import EssentialsDBHandler from "../dao/essentialsRepository";
+import orderDBHandler from "../dao/orderRepository";
+import { Order } from "../entity/Entities";
 import AppError from "../utils/appError";
 import catchAsync from "../utils/errorHandler";
+import { ORDER_STATUS } from "../utils/staticData";
 
 const flattenOrder = (order: Order) => {
   const { client, vendor, ...ordersFlattened } = order;
-  console.log(order)
+  console.log(order);
   return {
     ...ordersFlattened,
     clientName: client.user.firstName + " " + client.user.lastName,
     vendorName: vendor.user.firstName + " " + vendor.user.lastName,
     vendorImgUrl: vendor.user.imageUrl,
-    clientImgUrl: client.user.imageUrl
+    clientImgUrl: client.user.imageUrl,
   };
 };
 
@@ -20,12 +22,14 @@ export const createOrder = catchAsync(async (req: Request, res: Response, next: 
   const order = req.body as Order;
   // TODO add or calculate client and vendor id. One take from res.data but need to know if client or vendor
   const user = res.user;
-  if (!user) return next(new AppError("User is not attached to the response!", 500));
 
-  order.clientId = Number(user.clientId);
-  order.status = OrderStatus.NEW;
+  //TODO THIS IS COMMENTED ONLY FOR POSTMAN TO WORK. RETURN THIS AND ADD 'protect' to createOrder route
+  // if (!user) return next(new AppError("User is not attached to the response!", 500));
+  // order.clientId = Number(user.clientId);
+  order.clientId = 1;
 
-  console.log(order)
+  order.orderStatusId = ORDER_STATUS.NEW;
+
   const orderRes = await orderDBHandler.addOrder(order);
   res.status(200).json({ status: "success", data: orderRes });
 });
@@ -37,7 +41,7 @@ export const cancelOrder = catchAsync(async (req: Request, res: Response, next: 
   if (!order) return next(new AppError("Could not find the order in the DB", 404));
 
   // TODO add or calculate client and vendor id. One take from res.data but need to know if client or vendor
-  order.status = OrderStatus.CANCELLED;
+  order.orderStatus = (await EssentialsDBHandler.findAllOrderStatuses())[ORDER_STATUS.CANCELLED];
 
   const orderRes = await orderDBHandler.updateOrder(order);
   res.status(200).json({ status: "success", data: orderRes });
@@ -47,10 +51,10 @@ export const getOrder = catchAsync(async (req: Request, res: Response, next: Nex
   const orderId = req.params.id;
 
   const orderRes = await orderDBHandler.findOrderById(orderId);
-  
+
   if (!orderRes) return next(new AppError(`Cannot find order with id ${orderId} in database!`, 404));
-  const orderFlattened  = flattenOrder(orderRes);
-  console.log("test")
+  const orderFlattened = flattenOrder(orderRes);
+  console.log("test");
 
   res.status(200).json({ status: "success", data: orderFlattened });
 });
@@ -72,6 +76,8 @@ export const getAllOrders = catchAsync(async (req: Request, res: Response, next:
   const searchIdVal = vendorId ? vendorId : clientId;
 
   const orders = await orderDBHandler.findAllOrders({ [searchIdArg]: searchIdVal });
+
+  console.log(orders)
 
   // loop through orders, get only name of user WTFFF
   const ordersHydrated = orders.map((order) => flattenOrder(order));
