@@ -12,6 +12,7 @@ import {
   OneToMany,
   Relation,
   PrimaryColumn,
+  RelationOptions
 } from "typeorm";
 
 export enum Role {
@@ -462,9 +463,9 @@ export class OrderHistory {
   @CreateDateColumn()
   createdAt: Date;
 
-  @ManyToOne(() => User, (user) => user.orderHistory, {eager: true})
+  @ManyToOne(() => User, (user) => user.orderHistory, {cascade: true, eager: true})
   user: User;
 
-  @ManyToOne(() => Order, (order) => order.orderHistory)
+  @ManyToOne(() => Order, (order) => order.orderHistory, {cascade : "update" as unknown as RelationOptions["cascade"]})
   order: Order;
 }

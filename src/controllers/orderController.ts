@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import EssentialsDBHandler from "../dao/essentialsRepository";
 import orderDBHandler from "../dao/orderRepository";
-import { Order, OrderComment } from "../entity/Entities";
+import { Order, OrderComment, OrderHistory } from "../entity/Entities";
 import AppError from "../utils/appError";
 import catchAsync from "../utils/errorHandler";
 import { ORDER_STATUS } from "../utils/staticData";
@@ -27,8 +27,10 @@ export const updateOrder = catchAsync(async (req: Request, res: Response, next: 
   // order.orderStatusId = ORDER_STATUS.ACTIVE;
 
   const orderRes = await orderDBHandler.updateOrder(order);
+  console.log(orderRes)
   res.status(200).json({ status: "success", data: orderRes });
 });
+
 export const createOrder = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
   const order = req.body as Order;
   // TODO add or calculate client and vendor id. One take from res.data but need to know if client or vendor
@@ -95,4 +97,10 @@ export const getAllOrders = catchAsync(async (req: Request, res: Response, next:
 export const publishOrderComment = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
   const orderComment = await orderDBHandler.addOrderComment(req.body as OrderComment);
   res.status(200).json({ status: "success", data: orderComment });
+});
+
+
+export const addOrderTimestamp = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+  const orderHistory = await orderDBHandler.addOrderHistory(req.body as OrderHistory);
+  res.status(200).json({ status: "success", data: orderHistory });
 });
