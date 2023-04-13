@@ -8,7 +8,7 @@ export const userRepository = AppDataSource.getRepository(User);
 export const clientRepository = AppDataSource.getRepository(Client);
 
 interface UserRepositoryInterface {
-  findUserById(id: string): Promise<User | null>;
+  findUserById(id: number): Promise<User | null>;
   findUserByEmail(email: string): Promise<User | null>;
   findAllUsers(): Promise<User[] | null>;
   findAllClients(): Promise<Client[] | null>;
@@ -20,14 +20,21 @@ interface UserRepositoryInterface {
 }
 
 class UserRepository implements UserRepositoryInterface {
-  async updateUserImage(userId: string, imageUrl: string) {
+  async updateUserImage(userId: number, imageUrl: string) {
     const user = await this.findUserById(userId);
     if (!user) throw new AppError("No such user in Database", 404);
     user.imageUrl = imageUrl;
     return await userRepository.save(user);
   }
 
-  async findUserById(id: string) {
+  async findUserBy(searchArg: Record<string, string | number>) {
+    return await userRepository.findOne({
+      where: searchArg,
+      relations: ['vendor'],
+    });
+  }
+
+  async findUserById(id: number) {
     const test = await userRepository.findOne({
       where: { id: id },
       relations: { vendor: { servedDistrict: true }, client: true },
@@ -53,13 +60,13 @@ class UserRepository implements UserRepositoryInterface {
     return await userRepository.save(data);
   }
 
-  async updateUser(id: string, data: User) {
+  async updateUser(id: number, data: User) {
     await validateObjToEntity<HydratedUser>(data, User);
     // .update does not work - https://github.com/typeorm/typeorm/issues/2821
     return await userRepository.save(data);
   }
 
-  async addVendor(id: string, vendorData: Vendor) {
+  async addVendor(id: number, vendorData: Vendor) {
     await validateObjToEntity<Vendor>(vendorData, Vendor);
     // const test = await vendorRepository.findOneBy({userId: id})
     const userData = await this.findUserById(id);

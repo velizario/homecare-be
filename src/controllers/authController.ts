@@ -7,7 +7,7 @@ import validatePassword from "../utils/validatePassword";
 import jwt, { JwtPayload } from "jsonwebtoken";
 import { flattenUserData } from "./flattenUserData";
 
-const signToken = (id: string) => {
+const signToken = (id: number) => {
   const token = jwt.sign({ id: id }, process.env.JWT_SECRET, {
     expiresIn: process.env.JWT_EXPIRES_IN,
   });

@@ -27,18 +27,13 @@ export default function hydrateUserData(data: FlattenedUser) {
   };
   // NOTE: No specific client data at this point.
   const clientData: Partial<Client> = { address, city, district };
-  if (hydratedUser.roles.includes(Role.CLIENT))
-    hydratedUser.client = { id: hydratedUser.clientId, ...clientData };
-  if (
-    hydratedUser.roles.includes(Role.VENDOR_INDIVIDUAL) ||
-    hydratedUser.roles.includes(Role.VENDOR_COMPANY)
-  ) {
+  if (hydratedUser.roles.includes(Role.CLIENT)) hydratedUser.client = { id: hydratedUser.clientId, ...clientData };
+  if (hydratedUser.roles.includes(Role.VENDOR_INDIVIDUAL) || hydratedUser.roles.includes(Role.VENDOR_COMPANY)) {
     hydratedUser.vendor = { id: hydratedUser.vendorId, ...vendorData };
     servedDistrict && (hydratedUser.vendor.servedDistrict = servedDistrict);
   }
 
   // replace "" values with null
-console.log(hydratedUser)
-  const userDataParsed = mapValues(hydratedUser, value => value === "" ? null : value)
+  const userDataParsed = mapValues(hydratedUser, (value) => (value === "" ? null : value));
   return userDataParsed as HydratedUser;
 }

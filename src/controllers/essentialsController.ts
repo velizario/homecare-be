@@ -21,7 +21,7 @@ export const getDistrictNames = catchAsync(async (req: Request, res: Response, n
 });
 
 export const getOrderStatuses = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
-  const orderStatuses = await EssentialsDBHandler.findAllOrderStatuses();
+  const orderStatuses = await EssentialsDBHandler.findOrderstatuses();
 
   res.status(201).json({
     status: "success",

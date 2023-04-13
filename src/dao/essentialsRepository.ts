@@ -13,7 +13,7 @@ class EssentialsRepository {
   async findAllVisitDays() {
     return await AppDataSource.manager.find(VisitDay)
   }
-  async findAllOrderStatuses() {
+  async findOrderstatuses() {
     return await AppDataSource.manager.find(OrderStatus)
   }
   async findAllVisitHours() {

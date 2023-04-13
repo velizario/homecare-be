@@ -9,6 +9,7 @@ import AppError from "./utils/appError";
 import globalErrorHandler from "./utils/errorController";
 
 export const app = express();
+// TODO: implement winston for error and security logging - https://www.npmjs.com/package/winston
 
 // Security http headers
 app.use(helmet.crossOriginResourcePolicy({ policy: "cross-origin" })); //allow getting images from cross domains

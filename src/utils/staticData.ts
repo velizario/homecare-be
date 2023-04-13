@@ -10,17 +10,115 @@ export enum ORDER_STATUS {
 }
 
 export const seedServiceTypeData = [
-  { id: 1, value: "Почистване на дома" },
-  { id: 2, value: "Почистване на офиси и магазини" },
-  { id: 3, value: "Основно почистване" },
-  { id: 4, value: "Следремонтно чистене" },
-  { id: 5, value: "Индустриално обслужване" },
-  { id: 6, value: "Пране на мека мебел" },
-  { id: 7, value: "Пране на мокети / килими" },
-  { id: 8, value: "Почистване на подови настилки" },
-  { id: 9, value: "Почистване на прозорци и витрини" },
+  {
+    id: 1,
+    value: "Почистване на дома",
+    description: "Почистване на гъз, глава, и тем подобни",
+    imgUrl: "https://topmopscleaning.com/wp-content/uploads/2021/04/keeping-a-house-clean.jpeg",
+    // additionalServices: [
+    //   { id: 1, value: "Миене на печка" },
+    //   { id: 4, value: "Миене на хладилник" },
+    //   { id: 3, value: "Миене на тераса" },
+    //   { id: 2, value: "Миене на прозорци" },
+    // ]
+  },
+  {
+    id: 2,
+    value: "Почистване на офиси и магазини",
+    description: "Рязане на кабели и промиване с чист спирт",
+    imgUrl: "https://nswcommercialcleaning.com.au/wp-content/uploads/2018/04/iStock-609094288.jpg",
+    // additionalServices: [
+    //   { id: 1, value: "Миене на печка" },
+    //   { id: 4, value: "Миене на хладилник" },
+    //   { id: 3, value: "Миене на тераса" },
+    //   { id: 2, value: "Миене на прозорци" },
+    // ]
+  },
+  {
+    id: 3,
+    value: "Основно почистване",
+    description: "Рязане на кабели и промиване с чист спирт",
+    imgUrl: "https://cdn-ffokf.nitrocdn.com/LFtvDxXrnvtNThwjbFdxUfsgQYSGUhUB/assets/images/optimized/rev-37403d5/wp-content/uploads/2023/03/house-dusting.png",
+    // additionalServices: [
+    //   { id: 1, value: "Миене на печка" },
+    //   { id: 4, value: "Миене на хладилник" },
+    //   { id: 3, value: "Миене на тераса" },
+    //   { id: 2, value: "Миене на прозорци" },
+    // ]
+  },
+  {
+    id: 4,
+    value: "Следремонтно чистене",
+    description: "Рязане на кабели и промиване с чист спирт",
+    imgUrl: "https://prohousekeepers.com/wp-content/uploads/2019/05/post-construction-cleanup.jpg",
+    // additionalServices: [
+    //   { id: 1, value: "Миене на печка" },
+    //   { id: 4, value: "Миене на хладилник" },
+    //   { id: 3, value: "Миене на тераса" },
+    //   { id: 2, value: "Миене на прозорци" },
+    // ]
+  },
+  {
+    id: 5,
+    value: "Индустриално обслужване",
+    description: "Рязане на кабели и промиване с чист спирт",
+    imgUrl: "https://www.service-techcorp.com/hs-fs/hubfs/Industrial_Cleaning.jpeg?width=863&name=Industrial_Cleaning.jpeg",
+    // additionalServices: [
+    //   { id: 1, value: "Миене на печка" },
+    //   { id: 4, value: "Миене на хладилник" },
+    //   { id: 3, value: "Миене на тераса" },
+    //   { id: 2, value: "Миене на прозорци" },
+    // ]
+  },
+  {
+    id: 6,
+    value: "Пране на мека мебел",
+    description: "Почистване на фотьойли и изхвърляне на котки",
+    imgUrl: "https://media.angi.com/s3fs-public/Man-professionally-cleaning-couch.jpg?impolicy=leadImage",
+    // additionalServices: [
+    //   { id: 1, value: "Миене на печка" },
+    //   { id: 4, value: "Миене на хладилник" },
+    //   { id: 3, value: "Миене на тераса" },
+    //   { id: 2, value: "Миене на прозорци" },
+    // ]
+  },
+  {
+    id: 7,
+    value: "Пране на мокети / килими",
+    description: "Рязане на кабели и промиване с чист спирт",
+    imgUrl: "https://aadvancedcarpetcleaning.com/wp-content/uploads/2021/07/carpet-cleaners.jpg",
+    // additionalServices: [
+    //   { id: 1, value: "Миене на печка" },
+    //   { id: 4, value: "Миене на хладилник" },
+    //   { id: 3, value: "Миене на тераса" },
+    //   { id: 2, value: "Миене на прозорци" },
+    // ]
+  },
+  {
+    id: 8,
+    value: "Почистване на подови настилки",
+    description: "Рязане на кабели и промиване с чист спирт",
+    imgUrl: "https://www.webstaurantstore.com/images/products/large/573058/2253417.jpg",
+    // additionalServices: [
+    //   { id: 1, value: "Миене на печка" },
+    //   { id: 4, value: "Миене на хладилник" },
+    //   { id: 3, value: "Миене на тераса" },
+    //   { id: 2, value: "Миене на прозорци" },
+    // ]
+  },
+  {
+    id: 9,
+    value: "Почистване на прозорци и витрини",
+    description: "Рязане на кабели и промиване с чист спирт",
+    imgUrl: "https://thumbor.forbes.com/thumbor/fit-in/900x510/https://www.forbes.com/home-improvement/wp-content/uploads/2022/05/featured-image-window-cleaning.jpeg.jpg",
+    // additionalServices: [
+    //   { id: 1, value: "Миене на печка" },
+    //   { id: 2, value: "Миене на прозорци" },
+    //   { id: 3, value: "Миене на тераса" },
+    //   { id: 4, value: "Миене на хладилник" },
+    // ]
+  },
 ];
-
 export const seedDistrictNameData = [
   { id: 1, value: "Надежда 1" },
   { id: 2, value: "Дружба" },
@@ -41,9 +139,9 @@ export const seedDistrictNameData = [
 
 
 export const seedVisitFrequencyData = [
-  { id: 1, value: "Еднократно" },
-  { id: 2, value: "Седмично" },
-  { id: 3, value: "Двуседмично" },
+  { id: 1, value: "Седмично" },
+  { id: 2, value: "Двуседмично" },
+  { id: 3, value: "Еднократно" },
 ];
 
 export const seedVisitDayData = [
@@ -86,6 +184,8 @@ export const seedVisitHourData = [
   { id: 21, value: "18:00", daytime: "afternoon" },
 ];
 
+
+// if changed here, needs to be changed on the FE too
 export const seedEstateSizeData = [
   { id: 1, value: "0" },
   { id: 2, value: "10" },
