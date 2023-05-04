@@ -18,10 +18,11 @@ declare global {
         interface Request {
         // should not be limited to User
         user?: FlattenedUser;
+        
         }
         interface Response {
         // should not be limited to User
-        user?: FlattenedUser;
+        user?: User;
         }
     }
   }

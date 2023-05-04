@@ -12,7 +12,7 @@ import {
   OneToMany,
   Relation,
   PrimaryColumn,
-  RelationOptions
+  RelationOptions,
 } from "typeorm";
 
 export enum Role {
@@ -30,6 +30,25 @@ export enum DayOfWeek {
   FRIDAY,
   SATURDAY,
   SUNDAY,
+}
+
+export enum OrderHistoryLogType {
+  NEW = 1,
+  OFFER,
+  RESERVATION,
+  ACTIVE,
+  COMPLETE,
+  CANCELLED,
+  UPDATED,
+}
+
+export enum ORDER_STATUS {
+  NEW = 1,
+  OFFER,
+  RESERVATION,
+  ACTIVE,
+  COMPLETE,
+  CANCELLED,
 }
 
 @Entity()
@@ -91,7 +110,6 @@ export class User {
 
   @OneToMany(() => OrderHistory, (orderHistory) => orderHistory.user)
   orderHistory: Relation<OrderHistory[]>;
-
 }
 
 @Entity()
@@ -164,9 +182,9 @@ export class Vendor {
   // @IsOptional()
   // userId: string;
 
-  @ManyToMany(() => District, (district) => district.vendor, { cascade: true, eager: true })
+  @ManyToMany(() => DistrictName, (districtName) => districtName.vendor, { cascade: true, eager: true })
   @JoinTable()
-  servedDistrict: District[];
+  servedDistrict: DistrictName[];
 
   @OneToOne(() => Portfolio, (prices) => prices.vendor)
   portfolio: Relation<Portfolio>;
@@ -181,17 +199,17 @@ export class Vendor {
   orders: Relation<Order[]>;
 }
 
-@Entity()
-export class District {
-  @PrimaryGeneratedColumn()
-  id: number;
+// @Entity()
+// export class District {
+//   @PrimaryGeneratedColumn()
+//   id: number;
 
-  @Column()
-  districtName: string;
+//   @Column()
+//   districtName: string;
 
-  @ManyToMany(() => Vendor, (vendor) => vendor.servedDistrict)
-  vendor: Vendor[];
-}
+//   @ManyToMany(() => Vendor, (vendor) => vendor.servedDistrict)
+//   vendor: Vendor[];
+// }
 
 @Entity()
 export class Schedule {
@@ -282,19 +300,29 @@ export class Order {
   @PrimaryGeneratedColumn()
   id: number;
 
+  @Column({ nullable: true })
+  @IsOptional()
+  additionalInfo: string;
+
   @ManyToOne(() => ServiceType, (serviceType) => serviceType.order, { cascade: true, eager: true })
   serviceType: Relation<ServiceType>;
 
   @ManyToOne(() => VisitFrequency, (visitFrequency) => visitFrequency.order, { cascade: true, eager: true })
   visitFrequency: Relation<VisitFrequency>;
 
-  @ManyToMany(() => VisitDay, (visitDay) => visitDay.order, { cascade: true, eager: true })
+  @ManyToMany(() => ClientDayChoice, (clientDayChoice) => clientDayChoice.order, { cascade: true, eager: true })
   @JoinTable()
-  visitDay: Relation<VisitDay[]>;
+  clientDayChoice: Relation<ClientDayChoice[]>;
 
-  @ManyToMany(() => VisitHour, (visitHour) => visitHour.order, { cascade: true, eager: true })
+  @ManyToMany(() => ClientHourChoice, (clientHourChoice) => clientHourChoice.order, { cascade: true, eager: true })
   @JoinTable()
-  visitHour: Relation<VisitHour[]>;
+  clientHourChoice: Relation<ClientHourChoice[]>;
+
+  @ManyToOne(() => ClientDayChoice, (clientDayChoice) => clientDayChoice.order, { cascade: true, eager: true })
+  visitDay: Relation<ClientDayChoice>;
+
+  @ManyToOne(() => ClientHourChoice, (clientHourChoice) => clientHourChoice.order, { cascade: true, eager: true })
+  visitHour: Relation<ClientHourChoice>;
 
   @Column("varchar", { array: true, nullable: true })
   @IsOptional()
@@ -304,9 +332,10 @@ export class Order {
   estateSize: Relation<EstateSize>;
 
   @ManyToOne(() => OrderStatus, (orderStatus) => orderStatus.order, { cascade: true, eager: true })
+  @JoinColumn({ name: "orderStatusId" })
   orderStatus: Relation<OrderStatus>;
 
-  @Column()
+  @Column({ nullable: true })
   orderStatusId: number;
 
   @ManyToOne(() => DistrictName, (districtName) => districtName.order, { cascade: true, eager: true })
@@ -324,10 +353,10 @@ export class Order {
   @Column({ nullable: true })
   vendorId: number;
 
-  @OneToMany(() => OrderComment, (orderComment) => orderComment.order, { cascade: true, eager: true })
+  @OneToMany(() => OrderComment, (orderComment) => orderComment.order, { eager: true })
   orderComment: Relation<OrderComment[]>;
 
-  @OneToMany(() => OrderHistory, (orderHistory) => orderHistory.order, { cascade: true, eager: true })
+  @OneToMany(() => OrderHistory, (orderHistory) => orderHistory.order, { eager: true })
   orderHistory: Relation<OrderHistory[]>;
 
   @CreateDateColumn()
@@ -390,14 +419,14 @@ export class VisitFrequency {
 }
 
 @Entity()
-export class VisitDay {
+export class ClientDayChoice {
   @PrimaryColumn()
   id: number;
 
   @Column()
   value: string;
 
-  @ManyToMany(() => Order, (order) => order.visitFrequency)
+  @ManyToMany(() => Order, (order) => order.clientDayChoice)
   order: Order[];
 }
 
@@ -414,7 +443,7 @@ export class OrderStatus {
 }
 
 @Entity()
-export class VisitHour {
+export class ClientHourChoice {
   @PrimaryColumn()
   id: number;
 
@@ -424,7 +453,7 @@ export class VisitHour {
   @Column()
   daytime: string;
 
-  @ManyToMany(() => Order, (order) => order.visitHour)
+  @ManyToMany(() => Order, (order) => order.clientHourChoice)
   order: Order[];
 }
 
@@ -450,6 +479,9 @@ export class DistrictName {
 
   @OneToMany(() => Order, (order) => order.districtName)
   order: Order[];
+
+  @ManyToMany(() => Vendor, (vendor) => vendor.servedDistrict)
+  vendor: Vendor[];
 }
 
 @Entity()
@@ -458,14 +490,14 @@ export class OrderHistory {
   id: number;
 
   @Column()
-  updateType: string;
+  updateType: OrderHistoryLogType;
 
   @CreateDateColumn()
   createdAt: Date;
 
-  @ManyToOne(() => User, (user) => user.orderHistory, {cascade: true, eager: true})
+  @ManyToOne(() => User, (user) => user.orderHistory, { cascade: true, eager: true })
   user: User;
 
-  @ManyToOne(() => Order, (order) => order.orderHistory, {cascade : "update" as unknown as RelationOptions["cascade"]})
+  @ManyToOne(() => Order, (order) => order.orderHistory, { cascade: "update" as unknown as RelationOptions["cascade"] })
   order: Order;
 }

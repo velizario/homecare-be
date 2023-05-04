@@ -30,7 +30,7 @@ class UserRepository implements UserRepositoryInterface {
   async findUserBy(searchArg: Record<string, string | number>) {
     return await userRepository.findOne({
       where: searchArg,
-      relations: ['vendor'],
+      relations: ["vendor"],
     });
   }
 
@@ -43,7 +43,10 @@ class UserRepository implements UserRepositoryInterface {
   }
 
   async findUserByEmail(email: string): Promise<User | null> {
-    return await userRepository.findOneBy({ email: email });
+    return await userRepository.findOne({
+      where: { email: email },
+      relations: { vendor: { servedDistrict: true }, client: true },
+    });
   }
 
   async findAllUsers(): Promise<User[] | null> {

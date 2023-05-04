@@ -1,7 +1,6 @@
 import { AppDataSource } from "../DBConnectorData";
-import { DistrictName, EstateSize, OrderStatus, ServiceType, VisitDay, VisitFrequency, VisitHour } from "../entity/Entities";
+import { DistrictName, EstateSize, OrderStatus, ServiceType, ClientDayChoice, VisitFrequency, ClientHourChoice } from "../entity/Entities";
 
-export const SeedServiceTypeRepository = AppDataSource.getRepository(ServiceType);
 
 class EssentialsRepository {
   async findAllServiceTypes() {
@@ -10,14 +9,14 @@ class EssentialsRepository {
   async findAllVisitFrequencies() {
     return await AppDataSource.manager.find(VisitFrequency)
   }
-  async findAllVisitDays() {
-    return await AppDataSource.manager.find(VisitDay)
+  async findAllClientDayChoices() {
+    return await AppDataSource.manager.find(ClientDayChoice)
   }
   async findOrderstatuses() {
     return await AppDataSource.manager.find(OrderStatus)
   }
-  async findAllVisitHours() {
-    return await AppDataSource.manager.find(VisitHour)
+  async findAllClientHourChoices() {
+    return await AppDataSource.manager.find(ClientHourChoice)
   }
   async findAllEstateSizes() {
     return await AppDataSource.manager.find(EstateSize)

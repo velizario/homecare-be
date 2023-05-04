@@ -1,5 +1,4 @@
 import express from "express";
-import { flattenUserData } from "../controllers/flattenUserData";
 import { getVendorById } from "../controllers/vendorController";
 
 

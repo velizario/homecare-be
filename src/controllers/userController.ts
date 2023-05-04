@@ -9,14 +9,10 @@ import fileUpload from "express-fileupload";
 import mime from "mime";
 import { IMAGE_PATH } from "../utils/staticData";
 import { User } from "../entity/Entities";
-import { flattenUserData } from "./flattenUserData";
 import validateObjToEntity from "../utils/validateObjToEntity";
 
 export const getUser = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
-  // const user = await userDBHandler.findUserById(req.params.id);
-  // if (!user) return next(new AppError("User does not exist", 404));
-  // res.user = flattenUserData(user);
-  // next();
+
   res.status(200).json({
     status: "success",
     data: res.user,
@@ -28,7 +24,7 @@ export const getLoggedInUser = catchAsync(async (req: Request, res: Response, ne
   if (!req.user) return next(new AppError("User does not exist", 404));
   const user = await userDBHandler.findUserById(req.user.id);
   if (!user) return next(new AppError("User does not exist exists", 401));
-  res.user = flattenUserData(user);
+  res.user = user;
   next();
 });
 
@@ -70,7 +66,7 @@ export const signup = catchAsync(async (req: Request, res: Response, next: NextF
   
   const newUser = await userDBHandler.addUser(hydratedUser);
   if (!newUser) return next(new AppError("Could not create the user!", 400));
-  res.user = flattenUserData(newUser);
+  res.user = newUser;
   next();
 });
 
@@ -85,7 +81,7 @@ export const updateUser = catchAsync(async (req: Request, res: Response, next: N
 
   res.status(201).json({
     status: "success",
-    data: flattenUserData(updatedUser),
+    data: updatedUser,
   });
 });
 
@@ -97,21 +93,20 @@ export const changePassword = catchAsync(async (req: Request, res: Response, nex
   user.email = changeAttributes.email;
   // Hash the password with cost of 12
   user.password = await bcrypt.hash(changeAttributes.password, 12);
-  const hydratedUser = hydrateUserData(user);
 
-  validateObjToEntity(hydratedUser, User)
+  validateObjToEntity(user, User)
  
-  const userFoundInDb = await userDBHandler.findUserByEmail(hydratedUser.email);
-  if (userFoundInDb && userFoundInDb.id != hydratedUser.id) {
+  const userFoundInDb = await userDBHandler.findUserByEmail(user.email);
+  if (userFoundInDb && userFoundInDb.id != user.id) {
     return next(new AppError("User with such email already exists", 401));
   }
   
-  const updatedUser = await userDBHandler.updateUser(user.id, hydratedUser as User);
+  const updatedUser = await userDBHandler.updateUser(user.id, user);
   if (!updatedUser) return next(new AppError("Could not update the user!", 400));
 
   res.status(201).json({
     status: "success",
-    data: flattenUserData(updatedUser),
+    data: updatedUser,
   });
 });
 

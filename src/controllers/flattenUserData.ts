@@ -3,6 +3,8 @@ import { User } from "../entity/Entities";
 import { FlattenedUser } from "../types/types";
 import mapValues from 'lodash/mapValues'
 
+
+// TODO unnecessary - remove
 export const flattenUserData = (data: User) => {
   // Flatten by taking out 'vendor' and 'client'.
   // Strip off password (anything else?) as sensitive data to prepare for the frontend

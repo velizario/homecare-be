@@ -1,5 +1,5 @@
 import { mapValues } from "lodash";
-import { Client, Role, User, Vendor } from "../entity/Entities";
+import { Client, Role, Vendor } from "../entity/Entities";
 import { FlattenedUser, HydratedUser } from "../types/types";
 
 export default function hydrateUserData(data: FlattenedUser) {
@@ -24,6 +24,7 @@ export default function hydrateUserData(data: FlattenedUser) {
     website,
     instagram,
     facebook,
+    city
   };
   // NOTE: No specific client data at this point.
   const clientData: Partial<Client> = { address, city, district };

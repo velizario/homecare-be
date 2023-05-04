@@ -5,7 +5,6 @@ import userDBHandler from "../dao/UserRepository";
 import AppError from "../utils/appError";
 import validatePassword from "../utils/validatePassword";
 import jwt, { JwtPayload } from "jsonwebtoken";
-import { flattenUserData } from "./flattenUserData";
 
 const signToken = (id: number) => {
   const token = jwt.sign({ id: id }, process.env.JWT_SECRET, {
@@ -48,7 +47,7 @@ export const login = catchAsync(async (req: Request, res: Response, next: NextFu
   if (!user) return next(new AppError("Incorrect email or password", 401));
   if (!(await validatePassword(password, user.password))) return next(new AppError("Incorrect email or password", 401));
 
-  res.user = flattenUserData(user);
+  res.user = user;
   // Send the token to the user
   // res.status(200).json({
   //   status: "success",
@@ -85,7 +84,7 @@ export const protect = catchAsync(async (req: Request, res: Response, next: Next
   // 4) check if user changed password after JWT was issued NOTE: not implemented.
   
   // NOTE: How to keep info on the logged in user? response might be best. Right now I'm also adding to the req.user - see if that is security breach, as user can add it too
-  res.user = flattenUserData(freshUser);
+  res.user = freshUser;
   next();
 });
 

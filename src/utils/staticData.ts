@@ -1,13 +1,7 @@
 import path from "path";
+import { ORDER_STATUS } from "../entity/Entities";
 
 export const IMAGE_PATH = path.join(path.resolve(__dirname).split("\\src\\")[0], "public");
-
-export enum ORDER_STATUS {
-  NEW = 1,
-  ACTIVE,
-  COMPLETE,
-  CANCELLED
-}
 
 export const seedServiceTypeData = [
   {
@@ -144,7 +138,7 @@ export const seedVisitFrequencyData = [
   { id: 3, value: "Еднократно" },
 ];
 
-export const seedVisitDayData = [
+export const seedWeekDayData = [
   { id: 1, value: "Понеделник" },
   { id: 2, value: "Вторник" },
   { id: 3, value: "Сряда" },
@@ -155,13 +149,15 @@ export const seedVisitDayData = [
 ];
 
 export const seedOrderStatusData = [
-  { id: 1, value: "Нова" },
-  { id: 2, value: "Активна" },
-  { id: 3, value: "Завършена" },
-  { id: 4, value: "Анулирана" },
+  { id: ORDER_STATUS.NEW, value: "Нова" },
+  { id: ORDER_STATUS.OFFER, value: "Оферта" },
+  { id: ORDER_STATUS.RESERVATION, value: "Резервация" },
+  { id: ORDER_STATUS.ACTIVE, value: "Активна" },
+  { id: ORDER_STATUS.CANCELLED, value: "Анулирана" },
+  { id: ORDER_STATUS.COMPLETE, value: "Завършена" },
 ]
 
-export const seedVisitHourData = [
+export const seedHourDayData = [
   { id: 1, value: "08:00", daytime: "morning" },
   { id: 2, value: "08:30", daytime: "morning" },
   { id: 3, value: "09:00", daytime: "morning" },
