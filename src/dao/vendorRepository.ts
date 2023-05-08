@@ -1,5 +1,5 @@
 import { AppDataSource } from "../DBConnectorData";
-import { Vendor } from "../entity/Entities";
+import { Portfolio, Vendor } from "../entity/Entities";
 
 interface VendorRepositoryInterface {
   findVendorById(id: number): Promise<Vendor | null>;
@@ -7,6 +7,7 @@ interface VendorRepositoryInterface {
 }
 
 export const vendorRepository = AppDataSource.getRepository(Vendor);
+export const portfolioRepository = AppDataSource.getRepository(Portfolio);
 
 class VendorRepository implements VendorRepositoryInterface {
   async findVendorById(id: number): Promise<Vendor | null> {
@@ -14,7 +15,7 @@ class VendorRepository implements VendorRepositoryInterface {
   }
 
   async findAllVendors(): Promise<Vendor[] | null> {
-    return await vendorRepository.find();
+    return await vendorRepository.find({ relations: ["user"] });
   }
 
   async findVendorBy(searchArg: Record<string, string | number>) {
@@ -22,6 +23,10 @@ class VendorRepository implements VendorRepositoryInterface {
       where: searchArg,
       relations: ["user"],
     });
+  }
+
+  async updatePortfolio(data: Portfolio) {
+    return await portfolioRepository.save(data)
   }
 }
 

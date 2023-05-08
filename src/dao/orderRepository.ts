@@ -50,6 +50,7 @@ class OrderRepository implements OrderRepositoryInterface {
   }
 
   async addOrderComment(commentData: OrderComment) {
+    console.log(commentData)
     return await commentRepository.save(commentData);
   }
 }

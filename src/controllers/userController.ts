@@ -76,6 +76,7 @@ export const updateUser = catchAsync(async (req: Request, res: Response, next: N
   
   const userToUpdate = Object.assign(res.user, req.body) 
   const hydratedUser = hydrateUserData(userToUpdate as FlattenedUser);
+  console.log(hydratedUser)
   const updatedUser = await userDBHandler.updateUser(res.user.id, hydratedUser as User);
   if (!updatedUser) return next(new AppError("Could not update the user!", 400));
 

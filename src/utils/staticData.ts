@@ -133,9 +133,9 @@ export const seedDistrictNameData = [
 
 
 export const seedVisitFrequencyData = [
+  { id: 0, value: "Еднократно" },
   { id: 1, value: "Седмично" },
   { id: 2, value: "Двуседмично" },
-  { id: 3, value: "Еднократно" },
 ];
 
 export const seedWeekDayData = [

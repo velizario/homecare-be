@@ -125,19 +125,11 @@ export class Client {
   @IsOptional()
   city: string;
 
-  @Column({ nullable: true })
-  @IsOptional()
-  district: string;
+  @ManyToOne(() => DistrictName, (districtName) => districtName.order, { cascade: true, eager: true })
+  district: Relation<DistrictName>;
 
   @OneToOne(() => User, (user) => user.client)
   user: User;
-
-  // @Column({ nullable: true })
-  // @IsOptional()
-  // userId: string;
-
-  // @OneToMany(() => Event, (event) => event.client)
-  // events: Relation<Event[]>;
 
   @OneToMany(() => Order, (order) => order.client)
   orders: Relation<Order[]>;
@@ -186,7 +178,7 @@ export class Vendor {
   @JoinTable()
   servedDistrict: DistrictName[];
 
-  @OneToOne(() => Portfolio, (prices) => prices.vendor)
+  @OneToMany(() => Portfolio, (portfolio) => portfolio.vendor)
   portfolio: Relation<Portfolio>;
 
   @OneToOne(() => Schedule, (schedule) => schedule.vendor)
@@ -253,7 +245,7 @@ export class Service {
   @Column("varchar", { length: 30 })
   category: string;
 
-  @ManyToMany(() => Portfolio, (portfolio) => portfolio.service)
+  @OneToMany(() => Portfolio, (portfolio) => portfolio.service)
   portfolio: Portfolio[];
 
   // @OneToMany(() => Event, (event) => event.service)
@@ -266,14 +258,12 @@ export class Portfolio {
   id: number;
 
   @Column()
-  pricePerHour: number;
+  price: string;
 
-  @ManyToMany(() => Service, (service) => service.portfolio)
-  @JoinTable()
-  service: Service[];
+  @ManyToOne(() => ServiceType, (serviceType) => serviceType.portfolio)
+  service: Relation<ServiceType>;
 
-  @OneToOne(() => Vendor, (vendor) => vendor.portfolio)
-  @JoinColumn()
+  @ManyToOne(() => Vendor, (vendor) => vendor.portfolio)
   vendor: Vendor;
 }
 
@@ -361,6 +351,14 @@ export class Order {
 
   @CreateDateColumn()
   createdAt: Date;
+
+  @Column("varchar", { nullable: true })
+  @IsOptional()
+  startDate: string;
+
+  @Column("varchar", { nullable: true })
+  @IsOptional()
+  endDate: Date;
 }
 
 // @Entity()
@@ -404,6 +402,9 @@ export class ServiceType {
 
   @ManyToMany(() => Order, (order) => order.serviceType)
   order: Order[];
+
+  @OneToMany(() => Portfolio, (portfolio) => portfolio.service)
+  portfolio: Portfolio[];
 }
 
 @Entity()
@@ -479,6 +480,9 @@ export class DistrictName {
 
   @OneToMany(() => Order, (order) => order.districtName)
   order: Order[];
+
+  @OneToMany(() => Client, (client) => client.district)
+  client: Client[];
 
   @ManyToMany(() => Vendor, (vendor) => vendor.servedDistrict)
   vendor: Vendor[];

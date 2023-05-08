@@ -1,6 +1,4 @@
 import { AppDataSource } from "../DBConnectorData";
-import { Event } from "../entity/Entities";
-
 export const bookingRepository = AppDataSource.getRepository(Event)
 
 // import { HydratedDocument, Model } from "mongoose";

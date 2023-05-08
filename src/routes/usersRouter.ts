@@ -1,15 +1,9 @@
 import * as express from "express";
+import fileUpload from "express-fileupload";
 import { login, protect, sendToken } from "../controllers/authController";
 import {
-  getUser,
-  updateUser,
-  signup,
-  imageUpload,
-  getLoggedInUser,
-  changePassword,
-  // addVendor,
+  changePassword, getUser, imageUpload, signup, updateUser
 } from "../controllers/userController";
-import fileUpload from "express-fileupload";
 import { IMAGE_PATH } from "../utils/staticData";
 
 // User Router

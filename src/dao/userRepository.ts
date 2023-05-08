@@ -65,6 +65,7 @@ class UserRepository implements UserRepositoryInterface {
 
   async updateUser(id: number, data: User) {
     await validateObjToEntity<HydratedUser>(data, User);
+    console.log(data)
     // .update does not work - https://github.com/typeorm/typeorm/issues/2821
     return await userRepository.save(data);
   }

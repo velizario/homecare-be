@@ -1,11 +1,11 @@
 import { AppDataSource } from "../DBConnectorData";
-import { District } from "../entity/Entities";
+import { DistrictName } from "../entity/Entities";
 
-export const districtRepository = AppDataSource.getRepository(District);
+export const districtRepository = AppDataSource.getRepository(DistrictName);
 
 interface DistrictRepositoryInterface {
-  findUserById(id: number): Promise<District | null>;
-  findAllUsers(): Promise<District[] | null>;
+  findUserById(id: number): Promise<DistrictName | null>;
+  findAllUsers(): Promise<DistrictName[] | null>;
 }
 
 class DistrictRepository implements DistrictRepositoryInterface {
@@ -13,7 +13,7 @@ class DistrictRepository implements DistrictRepositoryInterface {
     return await districtRepository.findOneBy({ id: id });
   }
 
-  async findAllUsers(): Promise<District[] | null> {
+  async findAllUsers(): Promise<DistrictName[] | null> {
     return await districtRepository.find();
   }
 }
