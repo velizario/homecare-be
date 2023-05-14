@@ -1,21 +1,28 @@
-import { Request, Response, NextFunction } from "express";
-import catchAsync from "../utils/errorHandler";
-import AppError from "../utils/appError";
-import userDBHandler from "../dao/UserRepository";
 import bcrypt from "bcryptjs";
-import hydrateUserData from "../utils/hydrateUserData";
-import { FlattenedUser, HydratedUser } from "../types/types";
+import { NextFunction, Request, Response } from "express";
 import fileUpload from "express-fileupload";
-import mime from "mime";
-import { IMAGE_PATH } from "../utils/staticData";
+import userDBHandler from "../dao/UserRepository";
 import { User } from "../entity/Entities";
+import { FlattenedUser, HydratedUser } from "../types/types";
+import AppError from "../utils/appError";
+import catchAsync from "../utils/errorHandler";
+import hydrateUserData from "../utils/hydrateUserData";
 import validateObjToEntity from "../utils/validateObjToEntity";
 
 export const getUser = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
-
   res.status(200).json({
     status: "success",
     data: res.user,
+  });
+});
+
+export const getUserAnonymously = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+  const userId = Number(req.params.id);
+
+  const resData = await userDBHandler.findUserById(userId);
+  res.status(200).json({
+    status: "success",
+    data: resData,
   });
 });
 
@@ -28,26 +35,22 @@ export const getLoggedInUser = catchAsync(async (req: Request, res: Response, ne
   next();
 });
 
-export const imageUpload = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
-  // Log the files to the console
+
+
+export const imageProfileUpdate = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
   if (!req.files) return next(new AppError("no file!", 400));
   if (!res.user) return next(new AppError("User is not attached to response!", 500));
 
-  const image = req.files.file as fileUpload.UploadedFile;
+  const userId = (res.user as User).id
+  const image = req.files.uploadCandidate as fileUpload.UploadedFile;
 
-  if (!mime.getType(image.name)?.includes("image")) return next(new AppError("Not an image!", 500));
+  const user = await userDBHandler.findUserById(userId);
+  if (!user) throw new AppError("No such user in Database", 404);
+  user.imageUrl = image.name;
 
-  // If does not have image mime type prevent from uploading
-  // if (/^image/.test(image.mimetype)) return res.sendStatus(400);
-
-  image.mv(IMAGE_PATH + "/" + image.name, async (err) => {
-    if (err) {
-      return next(new AppError(err, 500));
-    }
-    const userWithImageUpdated = await userDBHandler.updateUserImage(res.user!.id, image.name);
-    if (!userWithImageUpdated) return next(new AppError("Could not upload image!", 500));
-    res.status(200).json({ status: "success", data: userWithImageUpdated });
-  });
+  const imageUpdated = await userDBHandler.updateUser(userId, user);
+  if (!imageUpdated) return next(new AppError("Could not upload image!", 500));
+  res.status(200).json({ status: "success", data: imageUpdated });
 });
 
 export const signup = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
@@ -63,7 +66,7 @@ export const signup = catchAsync(async (req: Request, res: Response, next: NextF
   }
   // Hash the password with cost of 12
   hydratedUser.password = await bcrypt.hash(hydratedUser.password, 12);
-  
+
   const newUser = await userDBHandler.addUser(hydratedUser);
   if (!newUser) return next(new AppError("Could not create the user!", 400));
   res.user = newUser;
@@ -72,11 +75,11 @@ export const signup = catchAsync(async (req: Request, res: Response, next: NextF
 
 // TODO: Validate that update is coming either from admin or from the user itself by confirming token is for the same user as the updates
 export const updateUser = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
-  if (!res.user) return next(new AppError("User not attached", 500))
-  
-  const userToUpdate = Object.assign(res.user, req.body) 
+  if (!res.user) return next(new AppError("User not attached", 500));
+
+  const userToUpdate = Object.assign(res.user, req.body);
   const hydratedUser = hydrateUserData(userToUpdate as FlattenedUser);
-  console.log(hydratedUser)
+  console.log(hydratedUser);
   const updatedUser = await userDBHandler.updateUser(res.user.id, hydratedUser as User);
   if (!updatedUser) return next(new AppError("Could not update the user!", 400));
 
@@ -90,18 +93,18 @@ export const changePassword = catchAsync(async (req: Request, res: Response, nex
   const changeAttributes = req.body as { email: string; password: string };
   const user = res.user;
   if (!user) return next(new AppError("User is not attached to response!", 500));
-  
+
   user.email = changeAttributes.email;
   // Hash the password with cost of 12
   user.password = await bcrypt.hash(changeAttributes.password, 12);
 
-  validateObjToEntity(user, User)
- 
+  validateObjToEntity(user, User);
+
   const userFoundInDb = await userDBHandler.findUserByEmail(user.email);
   if (userFoundInDb && userFoundInDb.id != user.id) {
     return next(new AppError("User with such email already exists", 401));
   }
-  
+
   const updatedUser = await userDBHandler.updateUser(user.id, user);
   if (!updatedUser) return next(new AppError("Could not update the user!", 400));
 

@@ -1,5 +1,5 @@
 import { AppDataSource } from "../DBConnectorData";
-import { Portfolio, Vendor } from "../entity/Entities";
+import { Vendor } from "../entity/Entities";
 
 interface VendorRepositoryInterface {
   findVendorById(id: number): Promise<Vendor | null>;
@@ -7,7 +7,6 @@ interface VendorRepositoryInterface {
 }
 
 export const vendorRepository = AppDataSource.getRepository(Vendor);
-export const portfolioRepository = AppDataSource.getRepository(Portfolio);
 
 class VendorRepository implements VendorRepositoryInterface {
   async findVendorById(id: number): Promise<Vendor | null> {
@@ -25,9 +24,11 @@ class VendorRepository implements VendorRepositoryInterface {
     });
   }
 
-  async updatePortfolio(data: Portfolio) {
-    return await portfolioRepository.save(data)
+  async updateVendor(data: Vendor) {
+    return await vendorRepository.save(data)
   }
+
+
 }
 
 const vendorDBHandler = new VendorRepository();

@@ -13,6 +13,7 @@ import {
   Relation,
   PrimaryColumn,
   RelationOptions,
+  Index,
 } from "typeorm";
 
 export enum Role {
@@ -178,8 +179,11 @@ export class Vendor {
   @JoinTable()
   servedDistrict: DistrictName[];
 
-  @OneToMany(() => Portfolio, (portfolio) => portfolio.vendor)
-  portfolio: Relation<Portfolio>;
+  @OneToMany(() => Portfolio, (portfolio) => portfolio.vendor, { eager: true, cascade: true })
+  portfolio: Relation<Portfolio[]>;
+
+  @OneToMany(() => PortfolioImage, (portfolioImage) => portfolioImage.vendor, { eager: true, cascade: true })
+  portfolioImage: Relation<PortfolioImage[]>;
 
   @OneToOne(() => Schedule, (schedule) => schedule.vendor)
   schedule: Relation<Schedule>;
@@ -254,17 +258,29 @@ export class Service {
 
 @Entity()
 export class Portfolio {
-  @PrimaryGeneratedColumn()
-  id: number;
+  @PrimaryGeneratedColumn("uuid")
+  id: string;
 
   @Column()
   price: string;
 
-  @ManyToOne(() => ServiceType, (serviceType) => serviceType.portfolio)
+  @ManyToOne(() => ServiceType, (serviceType) => serviceType.portfolio, { eager: true })
   service: Relation<ServiceType>;
 
   @ManyToOne(() => Vendor, (vendor) => vendor.portfolio)
   vendor: Vendor;
+}
+
+@Entity()
+export class PortfolioImage {
+  @PrimaryGeneratedColumn()
+  id: number;
+  
+  @Column()
+  imgUrl: string;
+
+  @ManyToOne(() => Vendor, (vendor) => vendor.portfolioImage)
+  vendor: Vendor
 }
 
 @Entity()

@@ -1,8 +1,9 @@
 import * as express from "express";
 import fileUpload from "express-fileupload";
 import { login, protect, sendToken } from "../controllers/authController";
+import { imageUploadFS } from "../controllers/fileController";
 import {
-  changePassword, getUser, imageUpload, signup, updateUser
+  changePassword, getUser, getUserAnonymously, imageProfileUpdate, signup, updateUser
 } from "../controllers/userController";
 import { IMAGE_PATH } from "../utils/staticData";
 
@@ -23,6 +24,8 @@ router.get("/userAuthenticate", protect, sendToken);
 // get user data route
 router.get("/userGet", protect, getUser);
 
+router.get("/userGet/:id",  getUserAnonymously);
+
 router.patch("/passwordChange", protect, changePassword)
 
 // get and patch user
@@ -39,7 +42,7 @@ router.use(
   })
 );
 
-router.post("/upload", protect, imageUpload);
+router.post("/upload", protect,imageUploadFS, imageProfileUpdate);
 
 // add protect
 router.use("/public", express.static(IMAGE_PATH));

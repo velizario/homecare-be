@@ -20,12 +20,6 @@ interface UserRepositoryInterface {
 }
 
 class UserRepository implements UserRepositoryInterface {
-  async updateUserImage(userId: number, imageUrl: string) {
-    const user = await this.findUserById(userId);
-    if (!user) throw new AppError("No such user in Database", 404);
-    user.imageUrl = imageUrl;
-    return await userRepository.save(user);
-  }
 
   async findUserBy(searchArg: Record<string, string | number>) {
     return await userRepository.findOne({
@@ -37,7 +31,7 @@ class UserRepository implements UserRepositoryInterface {
   async findUserById(id: number) {
     const test = await userRepository.findOne({
       where: { id: id },
-      relations: { vendor: { servedDistrict: true }, client: true },
+      relations: { vendor: { servedDistrict: true, portfolio: true, portfolioImage: true }, client: true },
     });
     return test;
   }
@@ -45,7 +39,7 @@ class UserRepository implements UserRepositoryInterface {
   async findUserByEmail(email: string): Promise<User | null> {
     return await userRepository.findOne({
       where: { email: email },
-      relations: { vendor: { servedDistrict: true }, client: true },
+      relations: { vendor: { servedDistrict: true, portfolio: true, portfolioImage: true }, client: true },
     });
   }
 
@@ -65,7 +59,6 @@ class UserRepository implements UserRepositoryInterface {
 
   async updateUser(id: number, data: User) {
     await validateObjToEntity<HydratedUser>(data, User);
-    console.log(data)
     // .update does not work - https://github.com/typeorm/typeorm/issues/2821
     return await userRepository.save(data);
   }
