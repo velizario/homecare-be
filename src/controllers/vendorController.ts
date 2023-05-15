@@ -47,34 +47,36 @@ export const updatePortfolioImage = catchAsync(async (req: Request, res: Respons
   const vendorId = (res.user as User).vendorId;
   const imageCandidate = req.files.uploadCandidate as fileUpload.UploadedFile;
 
-  const vendor = await vendorDBHandler.findVendorById(vendorId);
-  if (!vendor) return next(new AppError("Cannot find vendor", 401));
+  const portfolioImages = await vendorDBHandler.getPortfolioImages(vendorId);
 
-  if (vendor.portfolioImage.length >= 12) {
-    res.status(200).json({
-      status: "Max number ofimages reached",
-      data: {},
-    });
-    return;
-  }
+  // if (portfolioImages.length >= 12) {
+  //   res.status(200).json({
+  //     status: "Max number ofimages reached",
+  //     data: {},
+  //   });
+  //   return;
+  // }
 
-  const imageExists = vendor.portfolioImage.find((image) => image.imgUrl === imageCandidate.name);
+  const imageExists = portfolioImages.find((image) => image.imgUrl === imageCandidate.name);
   if (imageExists) {
     res.status(200).json({
       status: "Image exists",
       data: {},
     });
-    return
+    return;
   }
 
-  vendor.portfolioImage.push({ imgUrl: imageCandidate.name } as PortfolioImage);
+  const portfolioImage = new PortfolioImage();
+  portfolioImage.imgUrl = imageCandidate.name;
+  portfolioImage.vendor = { id: vendorId } as Vendor;
 
-  const updatedPortfolioImages = await vendorDBHandler.updateVendor(vendor);
-  if (!updatedPortfolioImages) return next(new AppError("Error updating", 401));
-  res.status(201).json({
-    status: "success",
-    data: updatedPortfolioImages,
-  });
+  const resData = await vendorDBHandler.addPortfolioImage(portfolioImage);
+  if (!resData) res.status(400).json({ status: 400, data: "appliation error" });
+  else
+    res.status(resData.code).json({
+      status: resData.status,
+      data: resData.data,
+    });
 });
 
 export const deletePortfolioImage = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
@@ -84,12 +86,11 @@ export const deletePortfolioImage = catchAsync(async (req: Request, res: Respons
   const vendorId = (res.user as User).vendorId;
   const imageCandidate = req.body as PortfolioImage;
 
-  const vendor = await vendorDBHandler.findVendorById(vendorId);
-  if (!vendor) return next(new AppError("Cannot find vendor", 401));
+  const images = await vendorDBHandler.getPortfolioImages(vendorId);
 
-  const numberOfImages = vendor.portfolioImage.length;
+  const numberOfImages = images.length;
 
-  const filteredImages = vendor.portfolioImage.filter((image) => image.id !== imageCandidate.id);
+  const filteredImages = images.filter((image) => image.id !== imageCandidate.id);
 
   if (numberOfImages === filteredImages.length) {
     res.status(404).json({
@@ -98,12 +99,11 @@ export const deletePortfolioImage = catchAsync(async (req: Request, res: Respons
     });
     return;
   }
-  vendor.portfolioImage = [...filteredImages];
-
-  const vendorWithoutImage = await vendorDBHandler.updateVendor(vendor);
-  if (!vendorWithoutImage) return next(new AppError("Error updating", 401));
+  
+  const resData = await vendorDBHandler.deletePortfolioImage(imageCandidate);
+  if (!resData) return next(new AppError("Error updating", 401));
   res.status(201).json({
     status: "success",
-    data: vendorWithoutImage,
+    data: resData,
   });
 });
