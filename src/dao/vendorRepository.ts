@@ -31,22 +31,25 @@ class VendorRepository implements VendorRepositoryInterface {
 
   async addPortfolioImage(data: PortfolioImage) {
     const queryRunner = AppDataSource.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
     try {
-      await queryRunner.connect();
-      await queryRunner.startTransaction();
-      console.log("starting lock and query");
-
+      // await queryRunner.query("lock table portfolio_image IN ACCESS EXCLUSIVE MODE");
       const images = await queryRunner.manager
         .getRepository(PortfolioImage)
-        .createQueryBuilder("portfolio_image")
-        .useTransaction(true)
-        .setLock("pessimistic_write")
-        .where("portfolio_image.vendor.id = :id", { id: data.vendor.id } )
-        .getMany();
+        .count({ where: { vendor: { id: data.vendor.id } } });
 
-      console.log("ending lock and query");
+      // const images = await queryRunner.manager
+      //   .getRepository(PortfolioImage)
+      //   .createQueryBuilder("portfolio_image")
+      //   .useTransaction(true)
+      //   .setLock("pessimistic_write")
+      //   .where({vendor: { id: data.vendor.id } })
+      //   .getMany();
 
-      if (13 >= 12) return { code: 200, status: "error", data: "Image limit of 12 reached" };
+      // console.log("ending lock and query");
+
+      if (images >= 12) return { code: 200, status: "error", data: "Image limit of 12 reached" };
       const resData = await queryRunner.manager.getRepository(PortfolioImage).save(data);
       await queryRunner.commitTransaction();
       return { code: 201, status: "success", data: resData };
