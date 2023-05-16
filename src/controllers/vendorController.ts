@@ -25,6 +25,16 @@ export const getVendors = catchAsync(async (req: Request, res: Response, next: N
   });
 });
 
+export const findVendors = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+  const searchArg = req.body as Record<string, string | number>;
+  const vendors = await vendorDBHandler.findVendors(searchArg);
+  if (!vendors) return next(new AppError("No vendors found", 401));
+  res.status(201).json({
+    status: "success",
+    data: vendors,
+  });
+});
+
 export const updatePortfolio = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
   // getting the logged in vendor Id and adding it to the portfolio
   const vendor = await vendorDBHandler.findVendorById((res.user as User).vendorId);
@@ -99,7 +109,7 @@ export const deletePortfolioImage = catchAsync(async (req: Request, res: Respons
     });
     return;
   }
-  
+
   const resData = await vendorDBHandler.deletePortfolioImage(imageCandidate);
 
   if (resData.affected !== 1) return next(new AppError("Error updating", 401));

@@ -18,8 +18,8 @@ class VendorRepository implements VendorRepositoryInterface {
     return await vendorRepository.find({ relations: ["user"] });
   }
 
-  async findVendorBy(searchArg: Record<string, string | number>) {
-    return await vendorRepository.findOne({
+  async findVendors(searchArg: Record<string, string | number>) {
+    return await vendorRepository.find({
       where: searchArg,
       relations: ["user"],
     });
