@@ -101,9 +101,10 @@ export const deletePortfolioImage = catchAsync(async (req: Request, res: Respons
   }
   
   const resData = await vendorDBHandler.deletePortfolioImage(imageCandidate);
-  if (!resData) return next(new AppError("Error updating", 401));
+
+  if (resData.affected !== 1) return next(new AppError("Error updating", 401));
   res.status(201).json({
     status: "success",
-    data: resData,
+    data: filteredImages,
   });
 });

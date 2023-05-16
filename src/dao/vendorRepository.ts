@@ -64,6 +64,10 @@ class VendorRepository implements VendorRepositoryInterface {
     return await portfolioImageRepository.find({ where: { vendor: { id: vendorId } } });
   }
 
+  async getPortfolioImage(imageId: number) {
+    return await portfolioImageRepository.findOneBy({ id: imageId });
+  }
+
   async deletePortfolioImage(image: PortfolioImage) {
     console.log("deleting image");
     return await portfolioImageRepository.delete(image.id);
