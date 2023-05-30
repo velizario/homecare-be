@@ -12,7 +12,7 @@ router.route("/getVendors").get(getVendors);
 
 router.route("/getVendor/:id").get(getVendorById);
 
-router.route("/findVendors").get(findVendors);
+router.route("/findVendors").post(findVendors);
 
 router.route("/updatePortfolio").patch(protect, updatePortfolio);
 

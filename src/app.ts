@@ -3,6 +3,7 @@ import helmet from "helmet";
 import morgan from "morgan";
 import essentialsRouter from "./routes/essentialsRouter";
 import ordersRouter from "./routes/ordersRouter";
+import testRouter from "./routes/testRouter";
 import usersRouter from "./routes/usersRouter";
 import vendorsRouter from "./routes/vendorsRouter";
 import AppError from "./utils/appError";
@@ -56,6 +57,9 @@ app.use("/api/v1/orders", ordersRouter);
 
 // Essentials Router
 app.use("/api/v1/essentials", essentialsRouter);
+
+// Test Router
+app.use("/api/v1/test", testRouter);
 
 // Bookings Router
 // app.use("/api/v1/bookings", bookingsRouter);

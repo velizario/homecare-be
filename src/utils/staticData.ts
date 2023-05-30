@@ -155,6 +155,7 @@ export const seedOrderStatusData = [
   { id: ORDER_STATUS.ACTIVE, value: "Активна" },
   { id: ORDER_STATUS.CANCELLED, value: "Анулирана" },
   { id: ORDER_STATUS.COMPLETE, value: "Завършена" },
+  { id: ORDER_STATUS.PASSED, value: "Изминала" },
 ]
 
 export const seedHourDayData = [

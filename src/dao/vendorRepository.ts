@@ -1,5 +1,6 @@
 import { AppDataSource } from "../DBConnectorData";
 import { PortfolioImage, Vendor } from "../entity/Entities";
+import { districtRepository } from "./districtRepository";
 
 interface VendorRepositoryInterface {
   findVendorById(id: number): Promise<Vendor | null>;
@@ -18,11 +19,12 @@ class VendorRepository implements VendorRepositoryInterface {
     return await vendorRepository.find({ relations: ["user"] });
   }
 
-  async findVendors(searchArg: Record<string, string | number>) {
-    return await vendorRepository.find({
-      where: searchArg,
-      relations: ["user"],
-    });
+  async findVendors(searchArg: Record<string, any>) {
+    // First query only joins pulling vendors by condition once and then once more to get all relations properly.
+    const vendorsFound = await vendorRepository.find({where: searchArg});
+    if (vendorsFound.length === 0) return []
+    const vendorIds = vendorsFound.map(vendor => ({id: vendor.id}))
+    return await vendorRepository.find({where: vendorIds, relations: ["user"]}, )
   }
 
   async updateVendor(data: Vendor) {

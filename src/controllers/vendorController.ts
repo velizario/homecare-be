@@ -26,7 +26,7 @@ export const getVendors = catchAsync(async (req: Request, res: Response, next: N
 });
 
 export const findVendors = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
-  const searchArg = req.body as Record<string, string | number>;
+  const searchArg = req.body as Record<string, any>;
   const vendors = await vendorDBHandler.findVendors(searchArg);
   if (!vendors) return next(new AppError("No vendors found", 401));
   res.status(201).json({
@@ -40,6 +40,8 @@ export const updatePortfolio = catchAsync(async (req: Request, res: Response, ne
   const vendor = await vendorDBHandler.findVendorById((res.user as User).vendorId);
   if (!vendor) return;
   vendor.portfolio = req.body.services as Portfolio[];
+  vendor.isAdhocEnabled = req.body.isAdhocEnabled
+  vendor.isSubscriptionEnabled = req.body.isSubscriptionEnabled
 
   const updatedPortfolio = await vendorDBHandler.updateVendor(vendor);
   if (!updatedPortfolio) return next(new AppError("Error updating", 401));

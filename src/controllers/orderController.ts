@@ -19,7 +19,6 @@ import catchAsync from "../utils/errorHandler";
 
 export const updateOrder = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
   const order = req.body as Order;
-  console.log(order.id);
   const orderRes = await orderDBHandler.updateOrder(order.id, order);
   //TODO change 1 (user Id) to res.user.id after adding 'protect' to route
   await orderDBHandler.updateOrderHistory(order.id, 1, OrderHistoryLogType.UPDATED);
@@ -87,7 +86,6 @@ export const getAllOrders = catchAsync(async (req: Request, res: Response, next:
   const searchIdVal = vendorId ? vendorId : clientId;
 
   const orders = await orderDBHandler.findOrders({ [searchIdArg]: searchIdVal });
-console.log(orders)
   // const ordersHydrated = orders.map((order) => flattenOrder(order));
   res.status(200).json({ status: "success", data: orders });
 

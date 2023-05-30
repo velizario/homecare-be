@@ -50,6 +50,7 @@ export enum ORDER_STATUS {
   ACTIVE,
   COMPLETE,
   CANCELLED,
+  PASSED
 }
 
 @Entity()
@@ -193,6 +194,12 @@ export class Vendor {
 
   @OneToMany(() => Order, (order) => order.client)
   orders: Relation<Order[]>;
+
+  @Column("boolean", { default: false })
+  isAdhocEnabled: boolean;
+
+  @Column("boolean", { default: false })
+  isSubscriptionEnabled: boolean;
 }
 
 // @Entity()
@@ -275,12 +282,12 @@ export class Portfolio {
 export class PortfolioImage {
   @PrimaryGeneratedColumn()
   id: number;
-  
+
   @Column()
   imgUrl: string;
 
   @ManyToOne(() => Vendor, (vendor) => vendor.portfolioImage)
-  vendor: Vendor
+  vendor: Vendor;
 }
 
 @Entity()
@@ -365,6 +372,9 @@ export class Order {
   @OneToMany(() => OrderHistory, (orderHistory) => orderHistory.order, { eager: true })
   orderHistory: Relation<OrderHistory[]>;
 
+  @OneToMany(() => Event, (event) => event.order)
+  event: Relation<Event[]>;
+
   @CreateDateColumn()
   createdAt: Date;
 
@@ -377,29 +387,23 @@ export class Order {
   endDate: Date;
 }
 
-// @Entity()
-// export class Event {
-//   @PrimaryGeneratedColumn()
-//   id: string;
+@Entity()
+export class Event {
+  @PrimaryColumn()
+  id: string;
 
-//   @Column()
-//   startDate: Date;
+  @ManyToOne(() => Order, (order) => order.event)
+  order: Order;
+  
+  @Column()
+  status: ORDER_STATUS;
 
-//   @Column()
-//   frequency: VisitFrequency;
+  @Column()
+  rating: number;
 
-//   @Column("date", { array: true })
-//   skippedDays: Date[];
-
-//   @ManyToOne(() => Client, (client) => client.events)
-//   client: Client;
-
-//   @ManyToOne(() => Vendor, (vendor) => vendor.event)
-//   vendor: Vendor;
-
-//   @ManyToOne(() => Service, (service) => service.event)
-//   service: Service;
-// }
+  @Column()
+  feedback: string;
+}
 
 // Seeds
 @Entity()

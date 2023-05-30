@@ -43,6 +43,7 @@ class OrderRepository implements OrderRepositoryInterface {
   }
 
   async findOrders(searchArg: Record<string, string | number>) {
+    console.log(searchArg)
     return await orderRepository.find({
       where: searchArg,
       relations: { vendor: { user: true }, client: { user: true } },
@@ -50,7 +51,6 @@ class OrderRepository implements OrderRepositoryInterface {
   }
 
   async addOrderComment(commentData: OrderComment) {
-    console.log(commentData)
     return await commentRepository.save(commentData);
   }
 }
