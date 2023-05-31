@@ -50,7 +50,7 @@ export enum ORDER_STATUS {
   ACTIVE,
   COMPLETE,
   CANCELLED,
-  PASSED
+  PASSED,
 }
 
 @Entity()
@@ -349,6 +349,7 @@ export class Order {
   orderStatus: Relation<OrderStatus>;
 
   @Column({ nullable: true })
+  @IsOptional()
   orderStatusId: number;
 
   @ManyToOne(() => DistrictName, (districtName) => districtName.order, { cascade: true, eager: true })
@@ -358,12 +359,14 @@ export class Order {
   client: Client;
 
   @Column({ nullable: true })
+  @IsOptional()
   clientId: number;
 
   @ManyToOne(() => Vendor, (vendor) => vendor.orders)
   vendor: Vendor;
 
   @Column({ nullable: true })
+  @IsOptional()
   vendorId: number;
 
   @OneToMany(() => OrderComment, (orderComment) => orderComment.order, { eager: true })
@@ -394,14 +397,21 @@ export class Event {
 
   @ManyToOne(() => Order, (order) => order.event)
   order: Order;
-  
-  @Column()
+
+  @Column({ nullable: true })
+  @IsOptional()
+  orderId: number;
+
+  @Column({ nullable: true })
+  @IsOptional()
   status: ORDER_STATUS;
 
-  @Column()
+  @Column({ nullable: true })
+  @IsOptional()
   rating: number;
 
-  @Column()
+  @Column({ nullable: true })
+  @IsOptional()
   feedback: string;
 }
 

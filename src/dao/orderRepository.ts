@@ -1,9 +1,10 @@
 import { AppDataSource } from "../DBConnectorData";
-import { Order, OrderComment, OrderHistory, OrderHistoryLogType } from "../entity/Entities";
+import { Event, Order, OrderComment, OrderHistory, OrderHistoryLogType } from "../entity/Entities";
 
 export const orderRepository = AppDataSource.getRepository(Order);
 export const commentRepository = AppDataSource.getRepository(OrderComment);
 export const historyRepository = AppDataSource.getRepository(OrderHistory);
+export const eventRepository = AppDataSource.getRepository(Event);
 
 interface OrderRepositoryInterface {}
 
@@ -27,7 +28,7 @@ class OrderRepository implements OrderRepositoryInterface {
     console.log("updating without arrays");
     const updatedOrder = await orderRepository.update(orderId, orderData);
     if (!updatedOrder) return null;
-    return {...currentOrder, ...orderData};
+    return { ...currentOrder, ...orderData };
   }
 
   async updateOrderHistory(orderId: number, userId: number, updateType: OrderHistoryLogType) {
@@ -43,7 +44,7 @@ class OrderRepository implements OrderRepositoryInterface {
   }
 
   async findOrders(searchArg: Record<string, string | number>) {
-    console.log(searchArg)
+    console.log(searchArg);
     return await orderRepository.find({
       where: searchArg,
       relations: { vendor: { user: true }, client: { user: true } },
@@ -52,6 +53,18 @@ class OrderRepository implements OrderRepositoryInterface {
 
   async addOrderComment(commentData: OrderComment) {
     return await commentRepository.save(commentData);
+  }
+
+  async editOrderEvent(eventData: Event) {
+    return await eventRepository.save(eventData);
+  }
+
+  async findEvents(searchArg: Record<string, string | number>) {
+    console.log(searchArg);
+    return await eventRepository.find({
+      where: searchArg,
+      // relations: { vendor: { user: true }, client: { user: true } },
+    });
   }
 }
 

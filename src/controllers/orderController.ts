@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import orderDBHandler from "../dao/orderRepository";
-import { Order, OrderComment, OrderHistory, OrderHistoryLogType, OrderStatus, ORDER_STATUS } from "../entity/Entities";
+import { Event, Order, OrderComment, OrderHistory, OrderHistoryLogType, OrderStatus, ORDER_STATUS } from "../entity/Entities";
 import AppError from "../utils/appError";
 import catchAsync from "../utils/errorHandler";
 
@@ -94,6 +94,18 @@ export const getAllOrders = catchAsync(async (req: Request, res: Response, next:
 
 export const publishOrderComment = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
   console.log("OrderController - publishOrderComment");
-  const orderComment = await orderDBHandler.addOrderComment(req.body as OrderComment);
-  res.status(200).json({ status: "success", data: orderComment });
+  const resData = await orderDBHandler.addOrderComment(req.body as OrderComment);
+  res.status(200).json({ status: "success", data: resData });
+});
+
+export const editEvent = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+  console.log("OrderController - editEvent");
+  const resData = await orderDBHandler.editOrderEvent(req.body as Event);
+  res.status(200).json({ status: "success", data: resData });
+});
+
+export const getEvents = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+  console.log("OrderController - getEvents");
+  const resData = await orderDBHandler.findEvents(req.body as Record<string, string | number>);
+  res.status(200).json({ status: "success", data: resData });
 });
