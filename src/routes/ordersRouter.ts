@@ -1,6 +1,6 @@
 import express from "express";
 import { protect } from "../controllers/authController";
-import { changeOrderStatus, createOrder, editEvent, getAllOrders, getEvents, getOrder, publishOrderComment, updateOrder } from "../controllers/orderController";
+import { changeOrderStatus, createOrder, upsertEvent, getAllOrders, getEvents, getOrder, publishOrderComment, updateOrder } from "../controllers/orderController";
 
 const router = express.Router();
 
@@ -16,7 +16,7 @@ router.post("/updateOrder", updateOrder);
 
 router.post("/addComment", publishOrderComment);
 
-router.post("/editEvent", editEvent);
+router.post("/upsertEvent", upsertEvent);
 
 router.get("/getEvents", getEvents);
 

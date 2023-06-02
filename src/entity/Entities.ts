@@ -395,6 +395,10 @@ export class Event {
   @PrimaryColumn()
   id: string;
 
+  // @Column({ nullable: true })
+  // @IsOptional()
+  // date: Date
+
   @ManyToOne(() => Order, (order) => order.event)
   order: Order;
 

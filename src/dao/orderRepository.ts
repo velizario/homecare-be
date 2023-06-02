@@ -47,7 +47,7 @@ class OrderRepository implements OrderRepositoryInterface {
     console.log(searchArg);
     return await orderRepository.find({
       where: searchArg,
-      relations: { vendor: { user: true }, client: { user: true } },
+      relations: { vendor: { user: true }, client: { user: true }, event: true },
     });
   }
 
@@ -55,8 +55,11 @@ class OrderRepository implements OrderRepositoryInterface {
     return await commentRepository.save(commentData);
   }
 
-  async editOrderEvent(eventData: Event) {
-    return await eventRepository.save(eventData);
+  async upsertOrderEvent(eventData: Event) {
+    const updateEvent = await eventRepository.upsert(eventData, ["id"]);
+    if (!updateEvent) return null;
+    const resData = await eventRepository.findOneBy({id: eventData.id})
+    return resData;
   }
 
   async findEvents(searchArg: Record<string, string | number>) {

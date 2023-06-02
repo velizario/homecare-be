@@ -98,9 +98,9 @@ export const publishOrderComment = catchAsync(async (req: Request, res: Response
   res.status(200).json({ status: "success", data: resData });
 });
 
-export const editEvent = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
-  console.log("OrderController - editEvent");
-  const resData = await orderDBHandler.editOrderEvent(req.body as Event);
+export const upsertEvent = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+  console.log("OrderController - addEvent");
+  const resData = await orderDBHandler.upsertOrderEvent(req.body as Event);
   res.status(200).json({ status: "success", data: resData });
 });
 
