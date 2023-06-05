@@ -31,7 +31,7 @@ class UserRepository implements UserRepositoryInterface {
   async findUserById(id: number) {
     const test = await userRepository.findOne({
       where: { id: id },
-      relations: { vendor: { servedDistrict: true, portfolio: true, portfolioImage: true }, client: true },
+      relations: { vendor: true, client: true },
     });
     return test;
   }
@@ -39,7 +39,7 @@ class UserRepository implements UserRepositoryInterface {
   async findUserByEmail(email: string): Promise<User | null> {
     return await userRepository.findOne({
       where: { email: email },
-      relations: { vendor: { servedDistrict: true, portfolio: true, portfolioImage: true }, client: true },
+      relations: { vendor: true, client: true },
     });
   }
 
