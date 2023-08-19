@@ -42,17 +42,21 @@ export const login = catchAsync(async (req: Request, res: Response, next: NextFu
   if (!email || !password) {
     return next(new AppError("Please provide email and password!", 400));
   }
+  console.log(email)
+
   // Check if the user exists and password is correct
   const user = await userDBHandler.findUserByEmail(email);
+  console.log(user)
   if (!user) return next(new AppError("Incorrect email or password", 401));
+  console.log("test")
   if (!(await validatePassword(password, user.password))) return next(new AppError("Incorrect email or password", 401));
 
-  res.user = user;
   // Send the token to the user
   // res.status(200).json({
   //   status: "success",
   //   data: res.user,
   // });
+  res.user = user;
   next();
 });
 
