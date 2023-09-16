@@ -4,7 +4,7 @@ import { changeOrderStatus, createOrder, upsertEvent, getAllOrders, getEvents, g
 
 const router = express.Router();
 
-router.post("/createOrder", createOrder);
+router.post("/createOrder", protect, createOrder);
 
 router.get("/getOrder/:id", getOrder);
 

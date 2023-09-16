@@ -27,18 +27,17 @@ export const updateOrder = catchAsync(async (req: Request, res: Response, next: 
 
 export const createOrder = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
   const order = req.body as Order;
+  console.log(order)
   // TODO add or calculate client and vendor id. One take from res.data but need to know if client or vendor
   const user = res.user;
 
-  //TODO THIS IS COMMENTED ONLY FOR POSTMAN TO WORK. RETURN THIS AND ADD 'protect' to createOrder route
-  // if (!user) return next(new AppError("User is not attached to the response!", 500));
-  // order.clientId = Number(user.clientId);
-  order.clientId = 1;
-  order.vendorId = 1;
+  if (!user) return next(new AppError("User is not attached to the response!", 500));
 
-  // when client selects only one day or hour, make it mandatory for the vendor
-  if (order.clientDayChoice.length === 1) order.visitDay = order.clientDayChoice[0];
-  if (order.clientHourChoice.length === 1) order.visitHour = order.clientHourChoice[0];
+  order.clientId = Number(user.clientId);
+
+  // if client selected only one day or hour from choices, transfer them to visitDay/Hour
+  if (order.clientDayChoice?.length === 1 && !order.visitDay) order.visitDay = order.clientDayChoice[0];
+  if (order.clientHourChoice?.length === 1 && !order.visitHour) order.visitHour = order.clientHourChoice[0];
 
   // when client selects a single day and a single hour, request is considered as reservation
   if (order.visitDay && order.visitHour) order.orderStatusId = ORDER_STATUS.RESERVATION;
